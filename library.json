@@ -1,0 +1,24 @@
+{
+  "name": "ESPCoreExtension",
+  "keywords": "iot, home, automation, wifi, esp8266",
+  "description": "Library extension of the Arduino core for ESP8266 WiFi chip",
+  "authors":
+  {
+    "name": "Gérald GUIONY",
+    "url": "http://wpsm.free.fr"
+  },
+  "repository": {
+        "type": "git",
+        "url": "https://github.com/gguiony/ESPCoreExtension.git"
+  },
+  "version": "3.2",
+  "frameworks": "arduino",
+  "platforms": "espressif8266",
+  "dependencies": [
+    {
+      "name": "ESP8266 core for Arduino",
+      "version": "2.3.0",
+      "platforms": "espressif8266"
+    }
+  ]
+}
