@@ -1,6 +1,6 @@
 # ESPCoreExtension
 
-ESPCoreExtension is a C++ library for ESP8266 WiFi chip which extends the libraries of the [ESP8266 core for Arduino project](https://github.com/esp8266/Arduino) 
+ESPCoreExtension is a C++ library for ESP8266 WiFi chip which extends the libraries of the [ESP8266 core for Arduino](https://github.com/esp8266/Arduino) project
 
 ## Getting started
 
