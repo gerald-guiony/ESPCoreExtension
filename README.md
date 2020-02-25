@@ -15,4 +15,6 @@ To use ESPCoreExtension, you need:
 1. Download the corresponding release
 2. Load the `.zip` with **Sketch → Include Library → Add .ZIP Library**
 
-ESPCoreExtension depends of the [ESP8266 core for Arduino project](https://github.com/esp8266/Arduino) v2.3.0
+## Dependencies
+
+To use this library you might need to have the v2.3.0 git version of [ESP8266 Arduino Core](https://github.com/esp8266/Arduino)
