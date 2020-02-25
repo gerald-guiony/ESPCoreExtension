@@ -17,4 +17,4 @@ To use ESPCoreExtension, you need:
 
 ## Dependencies
 
-To use this library you might need to have the v2.3.0 version of [ESP8266 Arduino Core](https://github.com/esp8266/Arduino)
+To use this library you might need to have the version 2.3.0 of [ESP8266 Arduino Core](https://github.com/esp8266/Arduino)
