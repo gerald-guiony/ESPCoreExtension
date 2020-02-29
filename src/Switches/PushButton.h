@@ -13,7 +13,8 @@
 
 #ifdef ESP8266
 
-#define PUSHBUTTON_CLASS(className)																											\
+
+#define ASYNC_PUSHBUTTON_CLASS(className, asyncInstructions)																				\
 class PushButton##className	: public Looper																									\
 {																																			\
 public:																																		\
@@ -23,9 +24,10 @@ public:																																		\
 	}																																		\
 																																			\
 	/* Interrupt Service Routines (ISR) handler has to be marked with ICACHE_RAM_ATTR 													*/	\
-	static void ICACHE_RAM_ATTR _ISR_user_btn ()																							\
+	static void ICACHE_RAM_ATTR _ISR_triggerPinFalling ()																					\
 	{																																		\
-		I(PushButton##className)._pushedState = true;																						\
+		I(PushButton##className)._pressedState = true;																						\
+		asyncInstructions;																													\
 	}																																		\
 																																			\
 	/* Interrupts may be attached in all the GPIOs of the ESP8266, except for the GPIO16 [3]											*/	\
@@ -39,13 +41,14 @@ public:																																		\
 																																			\
 		/* Attention ne pas utiliser le mode INPUT_PULLUP avec un pin déjà connecté avec une LED et une résistance ! 					*/	\
 		pinMode (pin, ((pin == USER_BTN) || (pin == BLINKLED)) ? INPUT : INPUT_PULLUP);														\
-		attachInterrupt (digitalPinToInterrupt(pin), PushButton##className::_ISR_user_btn, CHANGE);											\
+		/* to trigger when the pin goes from high to low */																					\
+		attachInterrupt (digitalPinToInterrupt(pin), PushButton##className::_ISR_triggerPinFalling, FALLING);								\
 	}																																		\
 																																			\
 	void loop () override {																													\
-		if (_pushedState) {																													\
-			notifyPushedState ();																											\
-			_pushedState = false;																											\
+		if (_pressedState) {																												\
+			notifyPressedState ();																											\
+			_pressedState = false;																											\
 		}																																	\
 	}																																		\
 																																			\
@@ -54,14 +57,18 @@ private:																																	\
 	virtual ~PushButton##className				() {}																						\
 																																			\
 public:																																		\
-	Delegate <> notifyPushedState;																											\
+	Delegate <> notifyPressedState;																											\
 																																			\
 protected:																																	\
 	/* We need to declare a variable as volatile when it can be changed unexpectedly (as in an ISR), so the compiler doesn’t remove		*/	\
 	/* it due to optimizations																											*/	\
 	/* https://barrgroup.com/Embedded-Systems/How-To/C-Volatile-Keyword																	*/	\
-	volatile bool _pushedState = false;																										\
+	volatile bool _pressedState		= false;																								\
 };
+
+
+
+#define PUSHBUTTON_CLASS(className) 	ASYNC_PUSHBUTTON_CLASS(className, return)
 
 
 #endif

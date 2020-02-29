@@ -50,7 +50,7 @@
 // Everything is off but the Real Time Clock (RTC), which is how the computer keeps time. Since everything is off, this is the most power efficient option. 
 // When the chip goes out of deep sleep mode, it starts again at the start of the setup() function
 // mode is one of WAKE_RF_DEFAULT, WAKE_RFCAL, WAKE_NO_RFCAL, WAKE_RF_DISABLED
-// GPIO16 needs to be tied to RST to wake from deepSleep (On the NodeMCU, GPIO 16 is represented as D0)
+// GPIO16 needs to be tied to RST pin to wake from deepSleep (On the NodeMCU, GPIO 16 is represented as D0)
 // https://www.losant.com/blog/making-the-esp8266-low-powered-with-deep-sleep
 
 // Wroom-02 :
@@ -67,14 +67,12 @@ enum class SleepMode {
 	DeepSleep			= 4
 };
 
-#define SHORT_RUNLOOP_DELAY_MS						1000
-#define LONG_RUNLOOP_DELAY_MS						10000
+#define SHORT_DELAY_BETWEEN_EXEC_MS					1000
+#define LONG_DELAY_BETWEEN_EXEC_MS					10000
 
 #define WAKEUP_DURATION_MS							60000
 
-#define FIRST_DEEP_SLEEP_DURATION_MS				300000						// 5m en ms
-#define DEEP_SLEEP_DURATION_MS						3600000						// 1h en ms.. with µs 
-//#define LONG_DEEP_SLEEP_DELAY_MS					0							// Reboot - No deep sleep
+#define DEEP_SLEEP_DURATION_MS						3600000						// 1h en ms.. with µs, maximum value is 0xFFFFFFFF=4294967295 (32 bits) µs which is about 71 minutes
 
 #define DEEPSLEEP_NAMEFILE							"/deepsleep.txt"
 
@@ -87,24 +85,30 @@ class EnergySaver : public Looper
 
 private:
 
-	SleepMode _sleepMode					= SleepMode::ModemSleep;
+	SleepMode _sleepMode						= SleepMode::ModemSleep;
+
+	unsigned long _shortDelayBetweenExecMs		= SHORT_DELAY_BETWEEN_EXEC_MS;
+	unsigned long _longDelayBetweenExecMs		= LONG_DELAY_BETWEEN_EXEC_MS;
+	unsigned long _wakeUpDurationMs				= WAKEUP_DURATION_MS;
+
+	unsigned long _deepSleepDurationMs 			= DEEP_SLEEP_DURATION_MS;
+	std::function <bool()> _isOkToDeepSleep		= [] { return false; };
 	
-	bool _enterDeepSleepOnWifiOff			= false;
 
-	unsigned long _lastWakeUpTimeStamp		= 0;
-	unsigned long _lastRunLoopTimeStamp		= 0;
+	volatile unsigned long _lastWakeUpTimeStamp	= 0;				// We need to declare a variable as volatile when it can be changed unexpectedly
+																	// (as in an ISR), so the compiler doesn’t remove it due to optimizations
+	unsigned long _lastExecTimeStamp			= 0;
 
-	bool _wakeUpState						= false;
-	bool _requestReboot						= false;
+	bool _wakeUpState							= false;
+	bool _requestReboot							= false;
 
-	std::list <Looper *> 					_loopers;
-	std::list <Looper *> :: iterator 		_itLooper;
+	std::list <Looper *> 						_loopers;
+	std::list <Looper *> :: iterator 			_itLooper;
 
 private:
 	
-	void updateWakeUpState					();
-	bool isDeepSleepTimeSlot				() const;
-	void enterInDeepSleep					();
+	bool updateWakeUpState						();
+	bool isOkToEnterDeepSleep					() const;
 
 public:
 
@@ -112,17 +116,24 @@ public:
 
 public:
 
-	void setModulesPower					(bool on);
-	void requestReboot						();
-	void wakeUp		 						();
+	void setModulesPower						(bool on);
+	void requestReboot							();
+	void wakeUp		 							();
 
-	void enterDeepSleepOnWifiOff			(bool enterDeepSleepOnWifiOff)			{ _enterDeepSleepOnWifiOff = enterDeepSleepOnWifiOff;	}
-	bool isWakeUpFromDeepSleep				() const;
+	void setShortDelayBetweenExecution			(unsigned long shortDelayBetweenExecMs)		{ _shortDelayBetweenExecMs	= shortDelayBetweenExecMs;	}
+	void setLongDelayBetweenExecution			(unsigned long longDelayBetweenExecMs)		{ _longDelayBetweenExecMs	= longDelayBetweenExecMs;	}
+	void setWakeUpDuration						(unsigned long wakeUpDurationMs)			{ _wakeUpDurationMs	= wakeUpDurationMs;					}
 
-	void setLoopers 						(std::list <Looper *> loopers);
+	void setDeepSleepDuration					(unsigned long deepSleepDurationMs)			{ _deepSleepDurationMs		= deepSleepDurationMs;		}
+	void setEnterDeepSleepIf					(std::function <bool()> isOkToDeepSleep)	{ _isOkToDeepSleep			= isOkToDeepSleep;			}
+	void setEnterDeepSleepIfWifiOff				();
+	void enterDeepSleep							() const;
+	bool isWakeUpFromDeepSleep					() const;
 
-	void setup								(std::list <Looper *> loopers, SleepMode sleepMode = SleepMode::ModemSleep);
-	void loop								() override;
+	void setLoopers 							(std::list <Looper *> loopers);
+
+	void setup									(std::list <Looper *> loopers, SleepMode sleepMode = SleepMode::ModemSleep);
+	void loop									() override;
 };
 
 

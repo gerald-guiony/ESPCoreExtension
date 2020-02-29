@@ -5,11 +5,6 @@
 //************************************************************************************************************************
 
 
-extern "C" {
-    #include "user_interface.h"  // Required for wifi_station_connect() to work
-}
-
-
 #include <ESP8266WiFi.h>							// https://github.com/esp8266/Arduino
 
 #include "Global.h"

@@ -1,6 +1,6 @@
 //************************************************************************************************************************
 // EnergySaver.cpp
-// Version 1.0 June, 2017
+// Version 2.0 June, 2019
 // Author Gerald Guiony
 //************************************************************************************************************************
 
@@ -50,65 +50,57 @@ void EnergySaver ::requestReboot ()
 //========================================================================================================================
 void EnergySaver :: wakeUp ()
 {
-	BLINK();
 	_lastWakeUpTimeStamp = millis();
-	
-	Logln (getChipMemoryStats());
 }
 
 //========================================================================================================================
 //
 //========================================================================================================================
-void EnergySaver :: updateWakeUpState ()
+bool EnergySaver :: updateWakeUpState ()
 {
-	bool wakeUpState = millis() - _lastWakeUpTimeStamp <= WAKEUP_DURATION_MS;
+	bool wakeUpState = millis() - _lastWakeUpTimeStamp <= _wakeUpDurationMs;
 	if (wakeUpState != _wakeUpState) {
 		_wakeUpState = wakeUpState;
-		notifyWakeUpStateChanged (wakeUpState);
+		notifyWakeUpStateChanged (wakeUpState);	
+		return true;
 	}
+	return false;
 }
 
 //========================================================================================================================
 //
 //========================================================================================================================
-bool EnergySaver :: isDeepSleepTimeSlot () const
+bool EnergySaver :: isOkToEnterDeepSleep () const
 {
-	if (_sleepMode == SleepMode::DeepSleep) {
-		return true;
-	}
-	else {
-		if (_enterDeepSleepOnWifiOff)
-		{
-			if(!WiFiHelper::isWifiAvailable()) {						// Si plus ou pas de wifi disponible
-				return (true);
-			}
-		}
-		return false;
-	}
+	if (_sleepMode == SleepMode::DeepSleep) return true;
+	return _isOkToDeepSleep ();
 }
 
 //========================================================================================================================
 // ### DEEP-SLEEP ###
 //========================================================================================================================
-void EnergySaver :: enterInDeepSleep ()
+void EnergySaver :: enterDeepSleep () const
 {
 	Logln ("Enter in deep sleep mode..");
 	
-	unsigned long deepSleepDuration = DEEP_SLEEP_DURATION_MS;			// maximum value is 0xFFFFFFFF=4294967295 (32 bits) us which is about 71 minutes
-	
 	if (!FileStorage::isFileExists(DEEPSLEEP_NAMEFILE)) {				// Si le fichier deepSleep.txt n'existe pas
-		if (_sleepMode != SleepMode::DeepSleep) {
-			deepSleepDuration = FIRST_DEEP_SLEEP_DURATION_MS;
-		}
 		FileStorage::createFile(DEEPSLEEP_NAMEFILE);					// Creation du fichier deepsleep.txt
 	}
 	
 	WiFiHelper::disconnectAll ();
 
 	// With ESP.deepSleep(0), esp will be going to sleep forever.
-	ESP.deepSleep(deepSleepDuration * 1000 /* µs */, WAKE_RF_DEFAULT /*WAKE_RF_DISABLED*/);	// WAKE_RF_DISABLED : this prevents the Wifi hardware from booting up after deep sleep	
-																							// Note that there is no way to enable it again without deep sleeping again 
+	ESP.deepSleep(_deepSleepDurationMs * 1000 /* µs */, WAKE_RF_DEFAULT /*WAKE_RF_DISABLED*/);	// WAKE_RF_DISABLED : this prevents the Wifi hardware from booting up after deep sleep	
+																								// Note that there is no way to enable it again without deep sleeping again 
 	delay(100);
+}
+
+//========================================================================================================================
+//
+//========================================================================================================================
+void EnergySaver :: setEnterDeepSleepIfWifiOff ()
+{
+	setEnterDeepSleepIf ([] { return !WiFiHelper::isWifiAvailable(); } );
 }
 
 //========================================================================================================================
@@ -120,8 +112,7 @@ bool EnergySaver :: isWakeUpFromDeepSleep () const
 	resetInfo = ESP.getResetInfoPtr();
 	
 	if (resetInfo->reason == REASON_DEEP_SLEEP_AWAKE) {
-		if (FileStorage::isFileExists(DEEPSLEEP_NAMEFILE)) {	// Ceinture et bretelles :)
-			Logln ("Wake up after deep sleep mode..");
+		if (FileStorage::isFileExists(DEEPSLEEP_NAMEFILE)) {
 			return true;
 		}
 	}
@@ -150,8 +141,8 @@ void EnergySaver :: setup (std::list <Looper *> loopers, SleepMode sleepMode /*=
 		
 	if (WiFiHelper::isWifiAvailable()) {
 		
-		if (_enterDeepSleepOnWifiOff) {
-			FileStorage::deleteFile(DEEPSLEEP_NAMEFILE);		// Effacer le fichier deepsleep.txt
+		if (!_isOkToDeepSleep ()) {
+			FileStorage::deleteFile (DEEPSLEEP_NAMEFILE);		// Effacer le fichier deepsleep.txt
 		}
 		
 		// *** Modem sleep & light sleep are just effective in station only mode *** 
@@ -165,7 +156,7 @@ void EnergySaver :: setup (std::list <Looper *> loopers, SleepMode sleepMode /*=
 
 	wakeUp ();
 	
-	_lastRunLoopTimeStamp = millis ();
+	_lastExecTimeStamp = millis ();
 }
 
 //========================================================================================================================
@@ -188,19 +179,17 @@ void EnergySaver :: loop ()
 		_itLooper++;
 
 		if (_itLooper == _loopers.end ()) {
-			_lastRunLoopTimeStamp = millis ();
+			_lastExecTimeStamp = millis ();
 		}
 	}
 	else {
 
-		updateWakeUpState ();
+		unsigned long delayBeforeNextExec = _wakeUpState ? _shortDelayBetweenExecMs : _longDelayBetweenExecMs;
 
-		unsigned long delayBeforeNextRunLoop = _wakeUpState ? SHORT_RUNLOOP_DELAY_MS : LONG_RUNLOOP_DELAY_MS;
+		if ((millis() - _lastExecTimeStamp > delayBeforeNextExec) || updateWakeUpState ()) {
 
-		if ((millis() - _lastRunLoopTimeStamp > delayBeforeNextRunLoop)) {
-
-			if (isDeepSleepTimeSlot ()) {
-				enterInDeepSleep();
+			if (isOkToEnterDeepSleep ()) {
+				enterDeepSleep();
 			}
 			else {
 				BLINK();
@@ -208,7 +197,7 @@ void EnergySaver :: loop ()
 			}
 		}
 		// millis takes 49+_days to rollover
-		else if ((millis() < _lastRunLoopTimeStamp) || _requestReboot) {
+		else if ((millis() < _lastExecTimeStamp) || _requestReboot) {
 
 			reboot ();
 		}

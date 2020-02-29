@@ -23,7 +23,6 @@
 //========================================================================================================================
 void initSketch () {
 
-
 #ifdef DEBUG
 #	warning -- DEBUG defined --
 #endif
@@ -41,7 +40,7 @@ void initSketch () {
 #	warning ** WIO_NODE defined **
 #endif
 
-	WiFiHelper::WiFiOff ();						// Save power during start up
+	WiFiHelper::WiFiOff ();								// Save power during start up
 
 #ifdef DEBUG
 #	ifdef DEBUG_SERIAL_OUTPUT
@@ -69,7 +68,7 @@ void initSketch () {
 	if (BLINKLED >= 0) pinMode (BLINKLED, OUTPUT);		// Set led pin as output
 
 
-	Logln (F("******* Chip is (re)booting *******"));
+	Logln (F("\n\n******* Chip is (re)booting *******"));
 
 	FileStorage::init ();								// Init file system
 }

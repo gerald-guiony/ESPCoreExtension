@@ -7,9 +7,11 @@
 #pragma once
 
 
+// The header file of the library might be able to see definitions from your sketch, the actual code (.c .cpp ) will not. 
+
 // Define DEBUG for lots of lovely debug output :)
 #define DEBUG
-//#define DEBUG_SERIAL_OUTPUT
+#define DEBUG_SERIAL_OUTPUT
 
 
 //------------------------------------------------------------------------------

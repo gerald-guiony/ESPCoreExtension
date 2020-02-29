@@ -11,8 +11,7 @@
 
 
 /**
- * 
- * GroveRelay Description: 
+ * GroveRelay Description example: 
  * The Grove-Relay module is a digital normally-open switch. Through it, you can control circuit of high voltage with low 
  * voltage, say 5V on the controller. There is an indicator LED on the board, which will light up when the controlled 
  * terminals get closed.

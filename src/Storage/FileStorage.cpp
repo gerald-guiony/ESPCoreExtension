@@ -142,7 +142,7 @@ File FileStorage :: createFile (const String & filename)
 		return f;
 	}
 	
-	Logln(F("The file '") << filename << F("' was created"));
+	Logln(F("The file '") << filename << F("' is created"));
 
 	return f;
 }
