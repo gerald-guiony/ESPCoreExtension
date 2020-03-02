@@ -11,7 +11,6 @@
 
 // Define DEBUG for lots of lovely debug output :)
 #define DEBUG
-#define DEBUG_SERIAL_OUTPUT
 
 
 //------------------------------------------------------------------------------

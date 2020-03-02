@@ -11,7 +11,7 @@
 
 #ifdef ESP8266
 
-void initSketch 				();
+void initSketch 				(bool enableDebugSerial = true);
 void reboot						();
 
 String getChipMemoryStats		();

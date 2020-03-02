@@ -16,20 +16,10 @@
 #include "Global.h"
 
 
-#ifdef ESP8266
-
-//========================================================================================================================
-//
-//========================================================================================================================
-void initSketch () {
 
 #ifdef DEBUG
 #	warning -- DEBUG defined --
 #endif
-#ifdef DEBUG_SERIAL_OUTPUT
-#	warning -- DEBUG_SERIAL_OUTPUT defined --
-#endif
-
 #ifdef ESP8266
 #	warning ** ESP8266 defined **
 #endif
@@ -40,33 +30,42 @@ void initSketch () {
 #	warning ** WIO_NODE defined **
 #endif
 
+
+
+#ifdef ESP8266
+
+//========================================================================================================================
+//
+//========================================================================================================================
+void initSketch (bool enableDebugSerial /*= true */) {
+
 	WiFiHelper::WiFiOff ();								// Save power during start up
 
 #ifdef DEBUG
-#	ifdef DEBUG_SERIAL_OUTPUT
 
-	Serial.begin(115200);								// change BAUD rate as required
-	while (!Serial); 									// wait until Serial is established - required on some Platforms
-	Serial.setDebugOutput (true);
-	Serial << F("Serial is up") << LN;
+	if (enableDebugSerial) {
 
-	// if you wants serial echo - only recommended if ESP8266 is plugged in USB
-//	I(Logger).notifyRequestLineToPrint += std::bind (&HardwareSerial::print, &Serial, std::placeholders::_1);
-	I(Logger).notifyRequestLineToPrint += [] (const String & line) { Serial.print (line); }; 
+		Serial.begin(115200);							// change BAUD rate as required
+		while (!Serial); 								// wait until Serial is established - required on some Platforms
+		Serial.setDebugOutput (true);
+		Serial << F("Serial is up") << LN;
 
-#	endif
+		// if you wants serial echo - only recommended if ESP8266 is plugged in USB
+	//	I(Logger).notifyRequestLineToPrint += std::bind (&HardwareSerial::print, &Serial, std::placeholders::_1);
+		I(Logger).notifyRequestLineToPrint += [] (const String & line) { Serial.print (line); }; 
 
-//	I(Logger).showTime (true);							// To show time
-//	I(Logger).showProfiler (true);						// To show profiler - time between messages of Debug - Good to "begin ...." and "end ...." messages
-//	I(Logger).showColors (false);						// Colors
-	I(Logger).showChipName (true);						// Name of this Esp8266
-	
-//	delay (10000);										// Delay before starting
-	
+	}
+
+	//	I(Logger).showTime (true);						// To show time
+	//	I(Logger).showProfiler (true);					// To show profiler - time between messages of Debug - Good to "begin ...." and "end ...." messages
+	//	I(Logger).showColors (false);					// Colors
+		I(Logger).showChipName (true);					// Name of this Esp8266
+		
+	//	delay (10000);									// Delay before starting
+
 #endif
 
 	if (BLINKLED >= 0) pinMode (BLINKLED, OUTPUT);		// Set led pin as output
-
 
 	Logln (F("\n\n******* Chip is (re)booting *******"));
 
@@ -126,16 +125,16 @@ void enableHardwareWatchdog () {
 //========================================================================================================================
 //
 //========================================================================================================================
-void initSketch () {
+void initSketch (bool enableDebugSerial /*= true */) {
 
 #ifdef DEBUG
 
-#ifdef DEBUG_SERIAL_OUTPUT
-	Serial.begin(115200);								// change BAUD rate as required
-	while (!Serial); 									// wait until Serial is established - required on some Platforms
-	Serial.setDebugOutput (true);
-	Serial << F("Serial is up") << LN;
-#endif
+	if (enableDebugSerial) {
+		Serial.begin(115200);							// change BAUD rate as required
+		while (!Serial); 								// wait until Serial is established - required on some Platforms
+		Serial.setDebugOutput (true);
+		Serial << F("Serial is up") << LN;
+	}
 	
 #endif
 
