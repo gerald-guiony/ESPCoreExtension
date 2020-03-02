@@ -125,8 +125,8 @@ public:
 	void setWakeUpDuration						(unsigned long wakeUpDurationMs)			{ _wakeUpDurationMs	= wakeUpDurationMs;					}
 
 	void setDeepSleepDuration					(unsigned long deepSleepDurationMs)			{ _deepSleepDurationMs		= deepSleepDurationMs;		}
-	void setEnterDeepSleepIf					(std::function <bool()> isOkToDeepSleep)	{ _isOkToDeepSleep			= isOkToDeepSleep;			}
-	void setEnterDeepSleepIfWifiOff				();
+	void enterDeepSleepIf						(std::function <bool()> isOkToDeepSleep)	{ _isOkToDeepSleep			= isOkToDeepSleep;			}
+	void enterDeepSleepIfWifiOff				();
 	void enterDeepSleep							() const;
 	bool isWakeUpFromDeepSleep					() const;
 

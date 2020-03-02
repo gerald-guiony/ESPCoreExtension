@@ -98,9 +98,9 @@ void EnergySaver :: enterDeepSleep () const
 //========================================================================================================================
 //
 //========================================================================================================================
-void EnergySaver :: setEnterDeepSleepIfWifiOff ()
+void EnergySaver :: enterDeepSleepIfWifiOff ()
 {
-	setEnterDeepSleepIf ([] { return !WiFiHelper::isWifiAvailable(); } );
+	enterDeepSleepIf ([] { return !WiFiHelper::isWifiAvailable(); } );
 }
 
 //========================================================================================================================
