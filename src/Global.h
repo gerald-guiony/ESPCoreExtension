@@ -17,6 +17,8 @@ void reboot						();
 String getChipMemoryStats		();
 String getChipName				();
 
+void setModulesPower			(bool on);
+
 // Very risky !
 void disableHardwareWatchdog	();
 void enableHardwareWatchdog		();

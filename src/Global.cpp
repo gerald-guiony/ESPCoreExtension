@@ -108,6 +108,21 @@ String getChipName () {
 //========================================================================================================================
 //
 //========================================================================================================================
+void setModulesPower (bool on)
+{
+#ifdef ARDUINO_ESP8266_WIO_NODE
+	// The power supply of Grove sockets is controlled by a MOSFET switch which is gated by GPIO 15. So you must pull up
+	// GPIO 15 in your Arduino sketch to power on the Grove system
+	pinMode (PORT_POWER, OUTPUT);
+	digitalWrite (PORT_POWER, on ? HIGH : LOW);
+#endif
+
+	//WiFi.setOutputPower(on ? 20.5 : 0.0); // (dBm	max: +20.5dBm min: 0dBm) sets transmit power to 0dbm to lower power consumption, but reduces usable range
+}
+
+//========================================================================================================================
+//
+//========================================================================================================================
 void disableHardwareWatchdog () {
   *((volatile uint32_t*) 0x60000900) &= ~(1); // Hardware WDT OFF
 }
@@ -118,7 +133,6 @@ void disableHardwareWatchdog () {
 void enableHardwareWatchdog () {
   *((volatile uint32_t*) 0x60000900) |= 1; // Hardware WDT ON
 }
-
 
 #else
 

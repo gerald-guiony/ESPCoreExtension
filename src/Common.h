@@ -10,11 +10,10 @@
 
 #include "Global.h"
 #include "BoardDefs.h"
-#include "Looper.h"
 
 #include "Print/Logger.h"
 #include "Storage/FileStorage.h"
-#include "PowerMngt/EnergySaver.h"
+#include "PowerMngt/LoopScheduler.h"
 
 #include "Stream/MemStream.h"
 #include "Stream/StreamCmdParser.h"

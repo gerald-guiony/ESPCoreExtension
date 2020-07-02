@@ -1,5 +1,5 @@
 //************************************************************************************************************************
-// EnergySaver.h
+// LoopScheduler.h
 // Version 1.0 June, 2017
 // Author Gerald Guiony
 //************************************************************************************************************************
@@ -79,9 +79,9 @@ enum class SleepMode {
 
 //------------------------------------------------------------------------------
 // WARNING : SINGLETON !!!!
-class EnergySaver : public Looper
+class LoopScheduler : public Looper
 {
-	SINGLETON_CLASS(EnergySaver)
+	SINGLETON_CLASS(LoopScheduler)
 
 private:
 
@@ -115,8 +115,7 @@ public:
 	Delegate <bool> notifyWakeUpStateChanged;
 
 public:
-
-	void setModulesPower						(bool on);
+	
 	void requestReboot							();
 	void wakeUp		 							();
 

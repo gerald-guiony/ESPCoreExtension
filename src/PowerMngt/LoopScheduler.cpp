@@ -1,5 +1,5 @@
 //************************************************************************************************************************
-// EnergySaver.cpp
+// LoopScheduler.cpp
 // Version 2.0 June, 2019
 // Author Gerald Guiony
 //************************************************************************************************************************
@@ -16,31 +16,16 @@
 #include "Storage/FileStorage.h"
 #include "WiFi/WiFiHelper.h"
 
-#include "EnergySaver.h"
+#include "LoopScheduler.h"
 
 
-SINGLETON_IMPL (EnergySaver)
+SINGLETON_IMPL (LoopScheduler)
 
 
 //========================================================================================================================
 //
 //========================================================================================================================
-void EnergySaver :: setModulesPower (bool on)
-{
-#ifdef ARDUINO_ESP8266_WIO_NODE
-	// The power supply of Grove sockets is controlled by a MOSFET switch which is gated by GPIO 15. So you must pull up
-	// GPIO 15 in your Arduino sketch to power on the Grove system
-	pinMode (PORT_POWER, OUTPUT);
-	digitalWrite (PORT_POWER, on ? HIGH : LOW);
-#endif
-
-	//WiFi.setOutputPower(on ? 20.5 : 0.0); // (dBm	max: +20.5dBm min: 0dBm) sets transmit power to 0dbm to lower power consumption, but reduces usable range
-}
-
-//========================================================================================================================
-//
-//========================================================================================================================
-void EnergySaver ::requestReboot ()
+void LoopScheduler ::requestReboot ()
 {
 	_requestReboot = true;
 }
@@ -48,7 +33,7 @@ void EnergySaver ::requestReboot ()
 //========================================================================================================================
 //
 //========================================================================================================================
-void EnergySaver :: wakeUp ()
+void LoopScheduler :: wakeUp ()
 {
 	_lastWakeUpTimeStamp = millis();
 }
@@ -56,7 +41,7 @@ void EnergySaver :: wakeUp ()
 //========================================================================================================================
 //
 //========================================================================================================================
-bool EnergySaver :: updateWakeUpState ()
+bool LoopScheduler :: updateWakeUpState ()
 {
 	bool wakeUpState = millis() - _lastWakeUpTimeStamp <= _wakeUpDurationMs;
 	if (wakeUpState != _wakeUpState) {
@@ -70,7 +55,7 @@ bool EnergySaver :: updateWakeUpState ()
 //========================================================================================================================
 //
 //========================================================================================================================
-bool EnergySaver :: isOkToEnterDeepSleep () const
+bool LoopScheduler :: isOkToEnterDeepSleep () const
 {
 	if (_sleepMode == SleepMode::DeepSleep) return true;
 	return _isOkToDeepSleep ();
@@ -79,7 +64,7 @@ bool EnergySaver :: isOkToEnterDeepSleep () const
 //========================================================================================================================
 // ### DEEP-SLEEP ###
 //========================================================================================================================
-void EnergySaver :: enterDeepSleep () const
+void LoopScheduler :: enterDeepSleep () const
 {
 	Logln ("Enter in deep sleep mode..");
 	
@@ -98,7 +83,7 @@ void EnergySaver :: enterDeepSleep () const
 //========================================================================================================================
 //
 //========================================================================================================================
-void EnergySaver :: enterDeepSleepIfWifiOff ()
+void LoopScheduler :: enterDeepSleepIfWifiOff ()
 {
 	enterDeepSleepIf ([] { return !WiFiHelper::isWifiAvailable(); } );
 }
@@ -106,7 +91,7 @@ void EnergySaver :: enterDeepSleepIfWifiOff ()
 //========================================================================================================================
 //
 //========================================================================================================================
-bool EnergySaver :: isWakeUpFromDeepSleep () const
+bool LoopScheduler :: isWakeUpFromDeepSleep () const
 {
 	rst_info *resetInfo;
 	resetInfo = ESP.getResetInfoPtr();
@@ -122,7 +107,7 @@ bool EnergySaver :: isWakeUpFromDeepSleep () const
 //========================================================================================================================
 //
 //========================================================================================================================
-void EnergySaver :: setLoopers (std::list <Looper *> loopers)
+void LoopScheduler :: setLoopers (std::list <Looper *> loopers)
 {
 	_loopers.assign(loopers.begin(), loopers.end());
 	_itLooper = _loopers.end();
@@ -131,7 +116,7 @@ void EnergySaver :: setLoopers (std::list <Looper *> loopers)
 //========================================================================================================================
 //
 //========================================================================================================================
-void EnergySaver :: setup (std::list <Looper *> loopers, SleepMode sleepMode /*= MODEM_SLEEP*/)
+void LoopScheduler :: setup (std::list <Looper *> loopers, SleepMode sleepMode /*= MODEM_SLEEP*/)
 {
 	_sleepMode = sleepMode;
 	
@@ -162,7 +147,7 @@ void EnergySaver :: setup (std::list <Looper *> loopers, SleepMode sleepMode /*=
 //========================================================================================================================
 //
 //========================================================================================================================
-void EnergySaver :: loop ()
+void LoopScheduler :: loop ()
 {
 	// The watchdog timer is automatically reset when loop() returns !
 	// Call yield() or delay() periodically, both will indirectly reset the watchdog.

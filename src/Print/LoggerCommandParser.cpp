@@ -8,7 +8,7 @@
 #include <WCharacter.h>
 
 #include "Global.h"
-#include "PowerMngt/EnergySaver.h"
+#include "PowerMngt/LoopScheduler.h"
 
 #include "Logger.h"
 #include "LoggerCommandParser.h"
@@ -73,7 +73,7 @@ bool LoggerCommandParser :: parse (char byteRcv, Print & printer) {
 		printer << F("Bye bye...") << LN;
 
 		notifyCloseAllSessionResquested ();
-		I(EnergySaver).requestReboot ();
+		I(LoopScheduler).requestReboot ();
 		break;
 		
 	default:
