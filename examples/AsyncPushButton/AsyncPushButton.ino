@@ -11,7 +11,7 @@
 #define PUSH_BUTTON_PIN		D1
 
 
-ASYNC_PUSHBUTTON_CLASS (Test, I(EnergySaver).wakeUp ())
+ASYNC_PUSHBUTTON_CLASS (Test, I(LoopScheduler).wakeUp ())
 
 
 
@@ -33,7 +33,7 @@ void setup()
 		Logln(F("Button is pressed"));
 	};
 
-	I(EnergySaver).setup ({ &I(PushButtonTest) });
+	I(LoopScheduler).setup ({ &I(PushButtonTest) });
 }
 
 //========================================================================================================================
@@ -41,5 +41,5 @@ void setup()
 //========================================================================================================================
 void loop()
 {
-	I(EnergySaver).loop ();
+	I(LoopScheduler).loop ();
 }

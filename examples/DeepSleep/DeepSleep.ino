@@ -26,17 +26,17 @@ void setup()
 
 	// ------------- Setup
 
-	if (I(EnergySaver).isWakeUpFromDeepSleep())	{
+	if (I(LoopScheduler).isWakeUpFromDeepSleep())	{
 		Logln(F("Wake up from deep sleep mode"));
 	}
 
 	I(PushButtonTest).setup (PUSH_BUTTON_PIN);
 	I(PushButtonTest).notifyPressedState += []() {
-		I(EnergySaver).enterDeepSleep();
+		I(LoopScheduler).enterDeepSleep();
 	};
 
-	I(EnergySaver).setDeepSleepDuration (10000);
-	I(EnergySaver).setup ({&I(PushButtonTest)});
+	I(LoopScheduler).setDeepSleepDuration (10000);
+	I(LoopScheduler).setup ({&I(PushButtonTest)});
 }
 
 //========================================================================================================================
@@ -44,5 +44,5 @@ void setup()
 //========================================================================================================================
 void loop()
 {
-	I(EnergySaver).loop ();
+	I(LoopScheduler).loop ();
 }

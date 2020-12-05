@@ -30,10 +30,10 @@ void setup()
 
 	I(PushButtonTest).notifyPressedState += []() {
 		Logln (F("Button was pressed"));
-		I(EnergySaver).wakeUp ();
+		I(LoopScheduler).wakeUp ();
 	};
 
-	I(EnergySaver).setup ({ &I(PushButtonTest) });
+	I(LoopScheduler).setup ({ &I(PushButtonTest) });
 }
 
 //========================================================================================================================
@@ -41,5 +41,5 @@ void setup()
 //========================================================================================================================
 void loop()
 {
-	I(EnergySaver).loop ();
+	I(LoopScheduler).loop ();
 }
