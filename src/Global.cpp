@@ -37,7 +37,7 @@
 //========================================================================================================================
 //
 //========================================================================================================================
-void initSketch (bool enableDebugSerial /*= true */) {
+void initSketch (bool enableDebugSerial /*= false */) {
 
 	WiFiHelper::WiFiOff ();								// Save power during start up
 	setModulesPower (false);							// Power OFF the groove socket
