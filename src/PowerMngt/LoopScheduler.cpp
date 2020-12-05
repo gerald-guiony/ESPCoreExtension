@@ -120,8 +120,6 @@ void LoopScheduler :: setup (std::list <Looper *> loopers, SleepMode sleepMode /
 {
 	_sleepMode = sleepMode;
 	
-	setModulesPower (false);
-
 	setLoopers (loopers);
 		
 	if (WiFiHelper::isWifiAvailable()) {

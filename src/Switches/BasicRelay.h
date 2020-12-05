@@ -9,6 +9,9 @@
 
 #include <Arduino.h>
 
+#include "Global.h"
+
+
 
 /**
  * GroveRelay Description example: 
@@ -28,8 +31,14 @@ private:
 
 public:
 
-	BasicRelay			(uint8_t pin) : _pin(pin)	{ pinMode (_pin, OUTPUT); disconnect ();    }
+	BasicRelay		(uint8_t pin) : _pin(pin)	{	pinMode (_pin, OUTPUT);
+													open ();						}
 
-	void connect		()							{ digitalWrite (_pin, HIGH);                }
-	void disconnect		()							{ digitalWrite (_pin, LOW);                 }
+	void open		()							{ 	digitalWrite (_pin, LOW);
+													// Power OFF the Grove sockets
+													setModulesPower (false);		}
+
+	void close		()							{ 	// Power ON the Grove sockets
+													setModulesPower (true);
+													digitalWrite (_pin, HIGH );		}
 };
