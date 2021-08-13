@@ -52,6 +52,7 @@
 
 #	define BLINKLED		BLUE_LED
 #	define USER_BTN		FUNC_BTN
+#	define RST_BTN		PORT_POWER
 
 
 #endif

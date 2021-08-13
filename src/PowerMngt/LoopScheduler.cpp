@@ -58,7 +58,7 @@ bool LoopScheduler :: updateWakeUpState ()
 bool LoopScheduler :: isOkToEnterDeepSleep () const
 {
 	if (_sleepMode == SleepMode::DeepSleep) return true;
-	return _isOkToDeepSleep ();
+	return _isOkToDeepSleepFn ();
 }
 
 //========================================================================================================================
@@ -83,9 +83,9 @@ void LoopScheduler :: enterDeepSleep () const
 //========================================================================================================================
 //
 //========================================================================================================================
-void LoopScheduler :: enterDeepSleepIfWifiOff ()
+void LoopScheduler :: enterDeepSleepWhenWifiOff ()
 {
-	enterDeepSleepIf ([] { return !WiFiHelper::isWifiAvailable(); } );
+	setEnterDeepSleepCond ([] { return !WiFiHelper::isWifiAvailable(); } );
 }
 
 //========================================================================================================================
@@ -124,7 +124,7 @@ void LoopScheduler :: setup (std::list <Looper *> loopers, SleepMode sleepMode /
 		
 	if (WiFiHelper::isWifiAvailable()) {
 		
-		if (!_isOkToDeepSleep ()) {
+		if (!_isOkToDeepSleepFn ()) {
 			FileStorage::deleteFile (DEEPSLEEP_NAMEFILE);		// Effacer le fichier deepsleep.txt
 		}
 		

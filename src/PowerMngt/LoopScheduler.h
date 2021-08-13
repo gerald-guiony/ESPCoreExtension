@@ -92,7 +92,7 @@ private:
 	unsigned long _wakeUpDurationMs				= WAKEUP_DURATION_MS;
 
 	unsigned long _deepSleepDurationMs 			= DEEP_SLEEP_DURATION_MS;
-	std::function <bool()> _isOkToDeepSleep		= [] { return false; };
+	std::function <bool()> _isOkToDeepSleepFn	= [] { return false; };
 	
 
 	volatile unsigned long _lastWakeUpTimeStamp	= 0;				// We need to declare a variable as volatile when it can be changed unexpectedly
@@ -124,8 +124,8 @@ public:
 	void setWakeUpDuration						(unsigned long wakeUpDurationMs)			{ _wakeUpDurationMs	= wakeUpDurationMs;					}
 
 	void setDeepSleepDuration					(unsigned long deepSleepDurationMs)			{ _deepSleepDurationMs		= deepSleepDurationMs;		}
-	void enterDeepSleepIf						(std::function <bool()> isOkToDeepSleep)	{ _isOkToDeepSleep			= isOkToDeepSleep;			}
-	void enterDeepSleepIfWifiOff				();
+	void setEnterDeepSleepCond					(std::function <bool()> isOkToDeepSleepFn)	{ _isOkToDeepSleepFn		= isOkToDeepSleepFn;		}
+	void enterDeepSleepWhenWifiOff				();
 	void enterDeepSleep							() const;
 	bool isWakeUpFromDeepSleep					() const;
 
