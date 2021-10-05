@@ -71,19 +71,19 @@ int StreamCmdParser :: getCmdId (Stream & stream) {
 //
 //========================================================================================================================
 String StreamCmdParser :: getCmdParam (Stream & stream) {
-	
+
 	String ret;
 	int p = stream.peek();
-	
+
 	while (p >= 0) {
 		String checkStr;
 		int i = 1;
-		
+
 		// Le prochain separateur est il MSG_SEPARATOR_PARAM, MSG_SEPARATOR_CMD ou MSG_TAG_END ?
 		if (p == MSG_SEPARATOR_PARAM[0]) checkStr = MSG_SEPARATOR_PARAM;
 		if (p == MSG_SEPARATOR_CMD[0]) checkStr = MSG_SEPARATOR_CMD;
 		if (p == MSG_TAG_END[0]) checkStr = MSG_TAG_END;
-		
+
 		if (checkStr.length() > 0) {
 			for (i = 1; i<checkStr.length(); i++) {
 				p = stream.peek ();
@@ -91,11 +91,11 @@ String StreamCmdParser :: getCmdParam (Stream & stream) {
 			}
 			if (i == checkStr.length()) return ret;
 		}
-		
+
 		ret += (char)stream.read();
 		p = stream.peek();
 	}
-	
+
 	return ret;
 }
 
@@ -164,18 +164,18 @@ int StreamRespParser :: getRespId (Stream & stream) {
 //
 //========================================================================================================================
 String StreamRespParser :: getRespParam (Stream & stream) {
-	
+
 	String ret;
 	int p = stream.peek();
-	
+
 	while (p >= 0) {
 		String checkStr;
 		int i = 1;
-		
+
 		// Le prochain separateur est il MSG_SEPARATOR_PARAM ou MSG_TAG_END ?
 		if (p == MSG_SEPARATOR_PARAM[0]) checkStr = MSG_SEPARATOR_PARAM;
 		if (p == MSG_TAG_END[0]) checkStr = MSG_TAG_END;
-		
+
 		if (checkStr.length() > 0) {
 			for (i = 1; i<checkStr.length(); i++) {
 				p = stream.peek ();
@@ -183,11 +183,11 @@ String StreamRespParser :: getRespParam (Stream & stream) {
 			}
 			if (i == checkStr.length()) return ret;
 		}
-		
+
 		ret += (char)stream.read();
 		p = stream.peek();
 	}
-	
+
 	return ret;
 }
 

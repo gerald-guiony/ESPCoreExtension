@@ -51,7 +51,7 @@ size_t MemStream::write (uint8_t byte) {
 			return -1;
 	}
 	else if (_pos_write >= BUF_MAX_LEN) {
-		
+
 		if (_pos_read > 0) {
 			for (int i=0; i<_pos_write-_pos_read; i++) {
 				_buffer[i] = _buffer[i + _pos_read];
@@ -64,9 +64,9 @@ size_t MemStream::write (uint8_t byte) {
 
 			File tmp = FileStorage::createTmpFile ();
 			if (!tmp) return -1;
-			
+
 			_fileStream = new File (tmp);
-			
+
 			// Copy the buffer values in the file
 			if (_fileStream->write (_buffer, BUF_MAX_LEN) != BUF_MAX_LEN) {
 				Logln(F("Cannot copy the values of the memory stream in the temporary file :("));
@@ -133,7 +133,7 @@ void MemStream::flush () {
 		FileStorage::deleteFile ((File &) *_fileStream);
 		delete (_fileStream);
 		_fileStream = NULL;
-		
+
 		_buffer_overflow = false;
 	}
 	memset(_buffer, 0, BUF_MAX_LEN * sizeof (_buffer[0]));

@@ -22,7 +22,7 @@
 // ### MODEM-SLEEP ###
 
 // Modem-sleep is the default mode for the ESP8266. However, it's only enabled when you're connected to an access point.
-// While in Modem-sleep, the ESP8266 will disable the modem (WiFi) as much as possible. It turns off the modem between DTIM Beacon intervals. 
+// While in Modem-sleep, the ESP8266 will disable the modem (WiFi) as much as possible. It turns off the modem between DTIM Beacon intervals.
 // This interval is set by your router.
 
 // Wroom-02 :
@@ -47,7 +47,7 @@
 
 // ### DEEP-SLEEP ###
 
-// Everything is off but the Real Time Clock (RTC), which is how the computer keeps time. Since everything is off, this is the most power efficient option. 
+// Everything is off but the Real Time Clock (RTC), which is how the computer keeps time. Since everything is off, this is the most power efficient option.
 // When the chip goes out of deep sleep mode, it starts again at the start of the setup() function
 // mode is one of WAKE_RF_DEFAULT, WAKE_RFCAL, WAKE_NO_RFCAL, WAKE_RF_DISABLED
 // GPIO16 needs to be tied to RST pin to wake from deepSleep (On the NodeMCU, GPIO 16 is represented as D0)
@@ -93,7 +93,7 @@ private:
 
 	unsigned long _deepSleepDurationMs 			= DEEP_SLEEP_DURATION_MS;
 	std::function <bool()> _isOkToDeepSleepFn	= [] { return false; };
-	
+
 
 	volatile unsigned long _lastWakeUpTimeStamp	= 0;				// We need to declare a variable as volatile when it can be changed unexpectedly
 																	// (as in an ISR), so the compiler doesn’t remove it due to optimizations
@@ -106,7 +106,7 @@ private:
 	std::list <Looper *> :: iterator 			_itLooper;
 
 private:
-	
+
 	bool updateWakeUpState						();
 	bool isOkToEnterDeepSleep					() const;
 
@@ -115,7 +115,7 @@ public:
 	Delegate <bool> notifyWakeUpStateChanged;
 
 public:
-	
+
 	void requestReboot							();
 	void wakeUp		 							();
 

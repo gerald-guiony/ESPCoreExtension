@@ -7,7 +7,7 @@
 #pragma once
 
 
-// The header file of the library might be able to see definitions from your sketch, the actual code (.c .cpp ) will not. 
+// The header file of the library might be able to see definitions from your sketch, the actual code (.c .cpp ) will not.
 
 // Define DEBUG for lots of lovely debug output :)
 #define DEBUG
@@ -92,7 +92,7 @@ public:
 	void showProfiler					(bool show);
 	void showColors						(bool show);
 	void showChipName					(bool show);
-	
+
 	// Print
 	virtual size_t write				(uint8_t) override;
 };

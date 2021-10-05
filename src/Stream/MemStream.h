@@ -15,7 +15,7 @@
 
 
 //------------------------------------------------------------------------------
-// 
+//
 class MemStream : public Stream
 {
 private:
@@ -49,16 +49,16 @@ public:
 	virtual void flush		() override;
 
 	//using Print::write;
-	
+
 //	friend MemStream& operator << (MemStream & memStream, Stream & stream) {
 //		memStream.readFrom(stream);
 //		return memStream;
 //	}
-	
+
 	friend MemStream& operator >> (MemStream & memStream, Stream & stream) {
 		memStream.writeTo(stream);
 		return memStream;
 	}
-	
+
 };
 

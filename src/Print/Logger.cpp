@@ -55,7 +55,7 @@ size_t Logger :: write (uint8_t character) {
 	if ((writeLineHeader)&&(_showTime||_showProfiler||_showChipName)) {
 
 		_lineToPrint = F("[");
-		
+
 		// Show time in millis
 		if (_showTime) {
 			_lineToPrint.concat (F("t:"));
@@ -65,14 +65,14 @@ size_t Logger :: write (uint8_t character) {
 
 		// Show profiler (time between messages)
 		if (_showProfiler) {
-			
+
 			elapsed = (millis() - lastTime);
 			bool resetColors = false;
-			
+
 			if (_showTime) _lineToPrint.concat (F(" "));
-			
+
 			if (_showColors) {
-				
+
 				if (elapsed < 250) {
 					; // not color this
 				}
@@ -93,31 +93,31 @@ size_t Logger :: write (uint8_t character) {
 					resetColors = true;
 				}
 			}
-			
+
 			_lineToPrint.concat (F("p:"));
 			_lineToPrint.concat (formatNumber(elapsed, 4));
 			_lineToPrint.concat (F("ms"));
-			
+
 			if (resetColors) {
 				_lineToPrint.concat(COLOR_RESET);
 			}
-			
+
 			lastTime = millis();
 		}
-		
+
 		if (_showChipName) {
 			if (_lineToPrint.length() > 1) _lineToPrint.concat (F(" "));
 			_lineToPrint.concat(getChipName ());
-		}	
-		
+		}
+
 		_lineToPrint.concat (F("] "));
 	}
 
 	size_t result = LinePrinter :: write (character);
-	
+
 	// Start a new line next time ?
 	writeLineHeader = result > 0;
-	
+
 	return result;
 }
 

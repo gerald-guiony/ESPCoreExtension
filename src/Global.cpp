@@ -53,7 +53,7 @@ void initSketch (bool enableDebugSerial /*= false */) {
 
 		// if you wants serial echo - only recommended if ESP8266 is plugged in USB
 	//	I(Logger).notifyRequestLineToPrint += std::bind (&HardwareSerial::print, &Serial, std::placeholders::_1);
-		I(Logger).notifyRequestLineToPrint += [] (const String & line) { Serial.print (line); }; 
+		I(Logger).notifyRequestLineToPrint += [] (const String & line) { Serial.print (line); };
 
 	}
 
@@ -61,7 +61,7 @@ void initSketch (bool enableDebugSerial /*= false */) {
 	//	I(Logger).showProfiler (true);					// To show profiler - time between messages of Debug - Good to "begin ...." and "end ...." messages
 	//	I(Logger).showColors (false);					// Colors
 		I(Logger).showChipName (true);					// Name of this Esp8266
-		
+
 	//	delay (10000);									// Delay before starting
 
 #endif
@@ -78,9 +78,9 @@ void initSketch (bool enableDebugSerial /*= false */) {
 //
 //========================================================================================================================
 void reboot () {
-	pinMode (16, OUTPUT);								// Nécessaire quand GPIO16 est relié au RST pin (DeepSleep) 
+	pinMode (16, OUTPUT);								// Nécessaire quand GPIO16 est relié au RST pin (DeepSleep)
 	digitalWrite (16, LOW);
-	
+
 	asyncDelayMillis (2000);
 	ESP.restart();
 	asyncDelayMillis (2000);
@@ -90,9 +90,9 @@ void reboot () {
 //
 //========================================================================================================================
 String getChipMemoryStats () {
-	StreamString mem; 
+	StreamString mem;
 	mem << F("Free ram memory = ") << ESP.getFreeHeap() << F(" bytes") << LN;
-	return mem; 
+	return mem;
 }
 
 //========================================================================================================================
@@ -150,7 +150,7 @@ void initSketch (bool enableDebugSerial /*= true */) {
 		Serial.setDebugOutput (true);
 		Serial << F("Serial is up") << LN;
 	}
-	
+
 #endif
 
 	Logln (F("******* Chip is (re)booting *******"));
@@ -171,7 +171,7 @@ String getChipMemoryStats () {
 	int v;
 	uint32_t free = (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
 
-	StreamString mem; 
+	StreamString mem;
 	mem << F("Free ram memory = ")	<< free	<< F(" bytes") << LN;
 	return mem;
 }
@@ -191,13 +191,13 @@ String getChipName () {
 // Cette méthode permet également de remplacer la méthode delay(ms) dans les callbacks async  (ESPAsyncWebServer)
 //========================================================================================================================
 void asyncDelayMillis (unsigned int ms) {
-	
+
 	ESP.wdtFeed();							// Explicitly restart the software watchdog
 //	yield();
-	
+
 	unsigned int loop = 0;
 	unsigned long time = ms * 1000;			// En microseconds..
-	
+
 	while (time > 16383) {					// delayMicroseconds is only accurate to 16383us.
 		delayMicroseconds (16383);
 		time -= 16383;
@@ -214,7 +214,7 @@ void asyncDelayMillis (unsigned int ms) {
 //
 //========================================================================================================================
 String timeElapsedSinceBoot () {
-	
+
 	unsigned long runMillis = millis();
 	unsigned long allSeconds = runMillis / 1000;
 
@@ -233,15 +233,15 @@ String timeElapsedSinceBoot () {
 //
 //========================================================================================================================
 bool strToLong (const String & str, long & value) {
-	
+
 	if (str.length () <= 0) return false;
 	if ((str[0] != '-') && !isDigit (str[0])) return false;
 	if ((str[0] == '-') && (str.length ()<=1)) return false;
-	
+
 	for (int i=1; i<str.length (); i++) {
 		if (!isdigit (str [i])) return false;
 	}
-	
+
 	value = str.toInt();
 	return true;
 }

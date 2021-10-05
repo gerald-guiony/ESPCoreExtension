@@ -22,10 +22,10 @@ public:
 	static bool isAccessPointMode			();
 	static IPAddress getIpAddress			();
 	static String getMacAddress				();
-			
+
 	static bool connectToWiFi				(uint16_t delayToConnect = STA_CONNECTION_DELAY);
 	static void startWiFiAccessPoint		();
-	
+
 	static void resetWiFiHardware			();
 	static void disconnectAll				();
 

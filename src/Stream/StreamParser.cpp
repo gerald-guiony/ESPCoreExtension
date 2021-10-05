@@ -45,9 +45,9 @@ uint8_t StreamParser :: hexstr2Int (Stream & stream) {
 	char hexValue [2];
 
 	stream.readBytes (hexValue, 2);
-	
+
 	uint8_t tens = (hexValue[0] <= '9') ? hexValue[0] - '0' : hexValue[0] - '7';
 	uint8_t ones = (hexValue[1] <= '9') ? hexValue[1] - '0' : hexValue[1] - '7';
-	
+
 	return (16 * tens) + ones;
 }

@@ -39,7 +39,7 @@ public:
 	void clear				() 								{	_delegates.clear(); 											}
 	inline void notify		(Args ...args) 					{	if (!_delegates.size()) return;
 															 	auto it = _delegates.begin();
-															 	while (it != _delegates.end()) { 
+															 	while (it != _delegates.end()) {
 																	auto curr = it++;
 																	curr->second(args...);
 																}

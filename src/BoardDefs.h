@@ -31,23 +31,23 @@
 
 //#	warning -- WIO_NODE defined --
 
-#	define PORT0A		1 
+#	define PORT0A		1
 #	define PORT0B		3
 #	define PORT1A		4
 #	define PORT1B		5
 #	define PORT_POWER	15											// (commun avec RED_LED)
 
-#	define FUNC_BTN		0 
+#	define FUNC_BTN		0
 #	define BLUE_LED		2											// D4 The BLUE led is attached to GPIO2 which is also the TX pin of UART1. When downloading firmware, the UART1 dumps the data transmitting on UART0 by instinct. So the BLUE led will blink while downloading firmware. After startup the GPIO2 will be configured as a GPIO not TX of UART1.
 #	define RED_LED		PORT_POWER									// D5 The RED led is another status led which indicates the power status of Grove modules.
 //#	define GREEN_LED	??											// D3 STAT : if no battery => led flash, if charging => led on, if charging ok => led off :) la LED verte ne peut pas être contrôlée car elle représente l'état de l'alimentation
 
-#	define UART0_TX		PORT0A 
+#	define UART0_TX		PORT0A
 #	define UART0_RX		PORT0B
 
 #	define UART1_TX		2											// Debugging: UART1_TXD (GPIO2) can be used to print debugging information.
 
-#	define I2C_SDA		PORT1A 
+#	define I2C_SDA		PORT1A
 #	define I2C_SCL		PORT1B
 
 #	define BLINKLED		BLUE_LED
@@ -66,7 +66,7 @@
 #	define D3			0
 #	define D4			2											// Same as "LEDBUILTIN", but inverted logic
 #	define D5			14											// SPI Bus SCK (clock)
-#	define D6			12											// SPI Bus MISO 
+#	define D6			12											// SPI Bus MISO
 #	define D7			13											// SPI Bus MOSI
 #	define D8			15											// SPI Bus SS (CS)
 #	define D9			3											// RX0 (Serial console)
@@ -111,7 +111,7 @@
 #else
 
 //#	error Wrong chip defined - cannot continue: Please use an ESP8266
-	
+
 // Arduino Wifi
 //#	define BLINKLED			13
 //#	define BLINKLED_ON()	(PORTB |= B00100000)

@@ -46,18 +46,18 @@ String WiFiHelper :: getMacAddress () {
 // https://github.com/esp8266/Arduino/blob/4897e0006b5b0123a2fa31f67b14a3fff65ce561/doc/esp8266wifi/station-class.md
 //========================================================================================================================
 bool WiFiHelper :: connectToWiFi (uint16_t delayToConnect) {
-	
+
 	Logln(F("Connecting to wifi network.."));
 
 	WiFiOn ();
-	
+
 	if (WiFi.status() == WL_CONNECTED) {
 		Logln(F("Already connected!"));
 		return true;
 	}
-	
+
 	WiFi.mode(WIFI_STA);
-	
+
 	if (WiFi.SSID()) {
 		Logln(F("Trying to connect to wifi ssid: ") << WiFi.SSID());
 		WiFi.begin();									// Persistent mode
@@ -65,7 +65,7 @@ bool WiFiHelper :: connectToWiFi (uint16_t delayToConnect) {
 	else {
 //		WiFi.begin("freebox_ASUTRY", "*****22222");
 	}
-	
+
 	unsigned long now = millis();
 	while (millis() - now < delayToConnect) {			// Wait x ms to connect
 		uint8_t status = WiFi.status();
@@ -73,22 +73,22 @@ bool WiFiHelper :: connectToWiFi (uint16_t delayToConnect) {
 			case WL_CONNECTED:
 				Logln(F("Connected to wifi network !"));
 				return true;
-			
+
 			case WL_CONNECT_FAILED:
 				Logln(F("Can't connect to the wifi network, incorrect password !"));
 				return false;
-		
+
 			case WL_NO_SSID_AVAIL:
 				Logln(F("Can't connect to the wifi network, configured SSID cannot be reached !"));
 				return false;
-			
+
 //			case WL_DISCONNECTED:
 //				Logln(F("Can't connect to the wifi network, module is not configured in station mode !"));
 //				return false;
 		}
 		delay (500);
 	}
-	
+
 	Logln(F("Timeout, can't connect to the wifi network !"));
 	return false;
 }
@@ -97,11 +97,11 @@ bool WiFiHelper :: connectToWiFi (uint16_t delayToConnect) {
 // Wifi access point mode
 //========================================================================================================================
 void WiFiHelper :: startWiFiAccessPoint () {
-	
+
 	Logln(F("Starting access point.."));
 
 	String AP_Name = getChipName();
-	
+
 	Logln(F("Configuring wifi access point : ") << AP_Name);
 
 	WiFiOn ();
@@ -126,16 +126,16 @@ void WiFiHelper :: resetWiFiHardware () {
 void WiFiHelper :: disconnectAll () {
 
 	if (!isWifiAvailable()) return;
-	
+
 	// WARNING !!!
-	// Please note that functions WiFi.disconnect or WiFi.softAPdisconnect reset currently used SSID / password. 
+	// Please note that functions WiFi.disconnect or WiFi.softAPdisconnect reset currently used SSID / password.
 	// If persistent is set to false, then using these functions will not affect SSID / password stored in flash.
-	
+
 	WiFi.persistent(false);
-	
+
 	WiFi.softAPdisconnect(true);					// Delete the AP config complete from the espressif config memory
 	WiFi.disconnect(true);							// Disconnects the station from an access point
-	
+
 	WiFi.persistent(true);
 
 	delay(1);
@@ -145,7 +145,7 @@ void WiFiHelper :: disconnectAll () {
 // https://www.bakke.online/index.php/2017/05/21/reducing-wifi-power-consumption-on-esp8266-part-2/
 //========================================================================================================================
 void WiFiHelper :: WiFiOn () {
-	
+
 	WiFi.forceSleepWake();
 	delay(1);
 }

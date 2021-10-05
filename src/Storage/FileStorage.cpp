@@ -141,7 +141,7 @@ File FileStorage :: createFile (const String & filename)
 		Logln(F("ERROR : Can't create the file : ") << filename);
 		return f;
 	}
-	
+
 	Logln(F("The file '") << filename << F("' is created"));
 
 	return f;
@@ -153,13 +153,13 @@ File FileStorage :: createFile (const String & filename)
 File FileStorage :: createTmpFile ()
 {
 	static int i = 0;
-	
+
 	StreamString sstr;
 	sstr << F(TMP_NAMEFILE_PREFIX) << i << F(TMP_NAMEFILE_SUFFIX);
-	
+
 	i++;
-	if (i >= 10) i = 0;			// 10 temporary files 
-	
+	if (i >= 10) i = 0;			// 10 temporary files
+
 	return createFile (sstr.c_str());
 }
 
@@ -167,7 +167,7 @@ File FileStorage :: createTmpFile ()
 //
 //========================================================================================================================
 bool FileStorage :: printTextFile (const String & filename, Print & printer) {
-	
+
 	File f = SPIFFS.open(filename, "r");
 	if (!f) {
 		Logln(F("Warning : Can't open the file : ") << filename);
@@ -179,7 +179,7 @@ bool FileStorage :: printTextFile (const String & filename, Print & printer) {
 		printer << (char)f.read();
 	}
 	printer << LN;
-	
+
 	f.close ();
 	return true;
 }

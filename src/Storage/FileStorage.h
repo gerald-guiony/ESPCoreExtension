@@ -17,13 +17,13 @@
 #define TMP_NAMEFILE_SUFFIX						".dat"
 
 //------------------------------------------------------------------------------
-// 
+//
 class FileStorage
 {
 
 public:
 	static void init								();
-	
+
 	static void spiffsMountFileSystem				();
 	static void spiffsCheckIfFormatted				();
 	static String spiffsListFiles					();
@@ -35,14 +35,14 @@ public:
 	static bool readTextFile						(const String & filename, String & text);
 	static bool writeTextFile						(const String & filename, const String & text);
 	static bool printTextFile						(const String & filename, Print & printer);
-		
+
 	static File createFile							(const String & filename);
 	static void deleteFile							(const String & filename);
 	static void deleteFile							(File & file);
 
 	static bool isFileExists						(const String & filename);
 	static bool setPosFile							(int pos, File & file);
-	
+
 	static File createTmpFile						();
 };
 

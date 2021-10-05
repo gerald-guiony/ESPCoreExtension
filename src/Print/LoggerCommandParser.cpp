@@ -32,15 +32,15 @@
 //
 //========================================================================================================================
 bool LoggerCommandParser :: parse (char byteRcv, Print & printer) {
-	
-	if (byteRcv == -1			|| 
+
+	if (byteRcv == -1			||
 		isWhitespace (byteRcv)	||
 		isSpace (byteRcv)		||
 		!isAscii (byteRcv)		||
 		!isPrintable (byteRcv))	{
 		return false;
 	}
-	
+
 	switch (byteRcv)
 	{
 	case '?':
@@ -51,7 +51,7 @@ bool LoggerCommandParser :: parse (char byteRcv, Print & printer) {
 	case 'q':
 		notifyCloseCurrentSessionResquested ();
 		break;
-			
+
 	case 'm':
 		printer << getChipMemoryStats ();
 		break;
@@ -63,7 +63,7 @@ bool LoggerCommandParser :: parse (char byteRcv, Print & printer) {
 	case 'p':
 		I(Logger).showProfiler(true);
 		break;
-	
+
 	case 'c':
 		I(Logger).showColors(true);
 		break;
@@ -75,7 +75,7 @@ bool LoggerCommandParser :: parse (char byteRcv, Print & printer) {
 		notifyCloseAllSessionResquested ();
 		I(LoopScheduler).requestReboot ();
 		break;
-		
+
 	default:
 		printer << F("[") << byteRcv << F("]: unknow command") << LN;
 		return false;

@@ -46,7 +46,7 @@ bool LoopScheduler :: updateWakeUpState ()
 	bool wakeUpState = millis() - _lastWakeUpTimeStamp <= _wakeUpDurationMs;
 	if (wakeUpState != _wakeUpState) {
 		_wakeUpState = wakeUpState;
-		notifyWakeUpStateChanged (wakeUpState);	
+		notifyWakeUpStateChanged (wakeUpState);
 		return true;
 	}
 	return false;
@@ -67,16 +67,16 @@ bool LoopScheduler :: isOkToEnterDeepSleep () const
 void LoopScheduler :: enterDeepSleep () const
 {
 	Logln ("Enter in deep sleep mode..");
-	
+
 	if (!FileStorage::isFileExists(DEEPSLEEP_NAMEFILE)) {				// Si le fichier deepSleep.txt n'existe pas
 		FileStorage::createFile(DEEPSLEEP_NAMEFILE);					// Creation du fichier deepsleep.txt
 	}
-	
+
 	WiFiHelper::disconnectAll ();
 
 	// With ESP.deepSleep(0), esp will be going to sleep forever.
-	ESP.deepSleep(_deepSleepDurationMs * 1000 /* µs */, WAKE_RF_DEFAULT /*WAKE_RF_DISABLED*/);	// WAKE_RF_DISABLED : this prevents the Wifi hardware from booting up after deep sleep	
-																								// Note that there is no way to enable it again without deep sleeping again 
+	ESP.deepSleep(_deepSleepDurationMs * 1000 /* µs */, WAKE_RF_DEFAULT /*WAKE_RF_DISABLED*/);	// WAKE_RF_DISABLED : this prevents the Wifi hardware from booting up after deep sleep
+																								// Note that there is no way to enable it again without deep sleeping again
 	delay(100);
 }
 
@@ -95,7 +95,7 @@ bool LoopScheduler :: isWakeUpFromDeepSleep () const
 {
 	rst_info *resetInfo;
 	resetInfo = ESP.getResetInfoPtr();
-	
+
 	if (resetInfo->reason == REASON_DEEP_SLEEP_AWAKE) {
 		if (FileStorage::isFileExists(DEEPSLEEP_NAMEFILE)) {
 			return true;
@@ -119,16 +119,16 @@ void LoopScheduler :: setLoopers (std::list <Looper *> loopers)
 void LoopScheduler :: setup (std::list <Looper *> loopers, SleepMode sleepMode /*= MODEM_SLEEP*/)
 {
 	_sleepMode = sleepMode;
-	
+
 	setLoopers (loopers);
-		
+
 	if (WiFiHelper::isWifiAvailable()) {
-		
+
 		if (!_isOkToDeepSleepFn ()) {
 			FileStorage::deleteFile (DEEPSLEEP_NAMEFILE);		// Effacer le fichier deepsleep.txt
 		}
-		
-		// *** Modem sleep & light sleep are just effective in station only mode *** 
+
+		// *** Modem sleep & light sleep are just effective in station only mode ***
 		if (!WiFiHelper::isAccessPointMode()) {
 			if ((_sleepMode == SleepMode::AutoLightSleep) || (_sleepMode == SleepMode::ForcedLightSleep)) {
 				// Auto Light-sleep
@@ -138,7 +138,7 @@ void LoopScheduler :: setup (std::list <Looper *> loopers, SleepMode sleepMode /
 	}
 
 	wakeUp ();
-	
+
 	_lastExecTimeStamp = millis ();
 }
 
@@ -155,7 +155,7 @@ void LoopScheduler :: loop ()
 
 	if (_itLooper != _loopers.end ()) {
 
-		// The ESP8266 runs a lot of utility functions in the background – keeping WiFi connected, managing the TCP/IP stack, and performing other duties. Blocking these 
+		// The ESP8266 runs a lot of utility functions in the background – keeping WiFi connected, managing the TCP/IP stack, and performing other duties. Blocking these
 		// functions from running can cause the ESP8266 to crash and reset itself. To avoid these mysterious resets, avoid long, blocking loops in your sketch.
 		(*_itLooper)->loop ();
 

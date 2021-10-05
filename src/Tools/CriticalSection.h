@@ -16,14 +16,14 @@
 */
 class CriticalSection {
 public :
-	CriticalSection ()	{ 
-		noInterrupts();						// Some functions will not work while interrupts are disabled, and incoming communication may be ignored. 
-											// Interrupts can slightly disrupt the timing of code, however, and may be disabled for particularly critical 
+	CriticalSection ()	{
+		noInterrupts();						// Some functions will not work while interrupts are disabled, and incoming communication may be ignored.
+											// Interrupts can slightly disrupt the timing of code, however, and may be disabled for particularly critical
 											// sections of code.
 	}
 
-	~CriticalSection () { 
-		interrupts();						// Re-enables interrupts (after they've been disabled by noInterrupts()). Interrupts allow certain important 
-											// tasks to happen in the background and are enabled by default. 
+	~CriticalSection () {
+		interrupts();						// Re-enables interrupts (after they've been disabled by noInterrupts()). Interrupts allow certain important
+											// tasks to happen in the background and are enabled by default.
 	}
 };

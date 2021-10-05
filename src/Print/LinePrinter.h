@@ -31,13 +31,13 @@ class LinePrinter : public Print
 protected:
 
 	String _lineToPrint 				= "";				// Buffer of print write to telnet
-	
+
 public:
 
 	Delegate <const String &>			notifyRequestLineToPrint;
 
 public:
-	
+
 	LinePrinter 						();
 
 	void flush							();
