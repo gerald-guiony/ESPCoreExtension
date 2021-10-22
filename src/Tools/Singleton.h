@@ -18,6 +18,11 @@
 // guaranteed by the standard: Static variables with block scope
 // ==============================================================================================
 
+// Do keep in mind that singletons and other global instances are often considered bad practice,
+// but they can be useful when dealing with things like hardware peripherals, where you know you’ll
+// always have a single instance that has to be shared.
+
+
 #define SINGLETON_CLASS(className)																\
 public:																							\
 	/*--------------------------------------------------------------------------------------*/	\
@@ -46,8 +51,8 @@ private:																						\
 	/* Guaranteed to be instanciated only one time even in dll								*/	\
 	className & className::getInstance()														\
 	{																							\
-		static className instance; /* Guaranteed to be destroyed, instantiated on first use */	\
-		return instance;																		\
+		static className instance##className; /* instantiated on first use */					\
+		return instance##className;																\
 	}
 
 
