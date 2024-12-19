@@ -58,7 +58,7 @@
 #endif
 
 // NodeMCU 1.0 12E
-#ifdef ARDUINO_ESP8266_NODEMCU
+#ifdef ARDUINO_ESP8266_NODEMCU_ESP12E
 
 #	define D0			16
 #	define D1			5											// I2C Bus SCL (clock)

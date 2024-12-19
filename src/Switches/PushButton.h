@@ -24,7 +24,7 @@ public:																																		\
 	}																																		\
 																																			\
 	/* Interrupt Service Routines (ISR) handler has to be marked with ICACHE_RAM_ATTR 													*/	\
-	static void ICACHE_RAM_ATTR _ISR_triggerPinFalling ()																					\
+	static void IRAM_ATTR _ISR_triggerPinFalling ()																							\
 	{																																		\
 		I(PushButton##className)._pressedState = true;																						\
 		asyncInstructions;																													\

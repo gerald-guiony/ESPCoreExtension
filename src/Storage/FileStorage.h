@@ -6,7 +6,10 @@
 
 #pragma once
 
-#include <FS.h>
+//#include <FS.h>
+#include <LittleFS.h>
+#define SPIFFS LittleFS
+
 #include <Print.h>
 
 

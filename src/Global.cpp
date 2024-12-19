@@ -23,7 +23,7 @@
 #ifdef ESP8266
 #	warning ** ESP8266 defined **
 #endif
-#ifdef ARDUINO_ESP8266_NODEMCU
+#ifdef ARDUINO_ESP8266_NODEMCU_ESP12E
 #	warning ** NODEMCU defined **
 #endif
 #ifdef ARDUINO_ESP8266_WIO_NODE
