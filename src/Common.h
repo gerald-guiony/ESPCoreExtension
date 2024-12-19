@@ -19,7 +19,7 @@
 #include "Stream/StreamCmdParser.h"
 
 #include "Tools/CriticalSection.h"
-#include "Tools/Delegate.h"
+#include "Tools/Signal.h"
 #include "Tools/Singleton.h"
 #include "Tools/Tycker.h"
 

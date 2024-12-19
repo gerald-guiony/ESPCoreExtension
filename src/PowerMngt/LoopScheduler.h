@@ -14,7 +14,7 @@
 #include <list>
 
 #include "Tools/Singleton.h"
-#include "Tools/Delegate.h"
+#include "Tools/Signal.h"
 
 #include "Looper.h"
 
@@ -112,7 +112,7 @@ private:
 
 public:
 
-	Delegate <bool> notifyWakeUpStateChanged;
+	Signal <bool> notifyWakeUpStateChanged;
 
 public:
 

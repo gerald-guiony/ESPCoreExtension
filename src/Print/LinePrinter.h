@@ -8,7 +8,7 @@
 
 #include <Print.h>
 
-#include "Tools/Delegate.h"
+#include "Tools/Signal.h"
 
 //------------------------------------------------------------------------------
 // Streaming template
@@ -34,7 +34,7 @@ protected:
 
 public:
 
-	Delegate <const String &>			notifyRequestLineToPrint;
+	Signal <const String &>				notifyRequestLineToPrint;
 
 public:
 

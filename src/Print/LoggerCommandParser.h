@@ -8,15 +8,15 @@
 
 #include <Print.h>
 
-#include "Tools/Delegate.h"
+#include "Tools/Signal.h"
 
 //------------------------------------------------------------------------------
 //
 class LoggerCommandParser
 {
 public:
-	Delegate <>								notifyCloseCurrentSessionResquested;
-	Delegate <>								notifyCloseAllSessionResquested;
+	Signal <>								notifyCloseCurrentSessionResquested;
+	Signal <>								notifyCloseAllSessionResquested;
 
 public:
 	LoggerCommandParser						() {}

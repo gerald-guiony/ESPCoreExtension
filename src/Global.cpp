@@ -9,7 +9,7 @@
 
 #include "BoardDefs.h"
 #include "Print/Logger.h"
-#include "Tools/Delegate.h"
+#include "Tools/Signal.h"
 #include "Storage/FileStorage.h"
 #include "WiFi/WiFiHelper.h"
 

@@ -57,7 +57,7 @@ private:																																	\
 	virtual ~PushButton##className				() {}																						\
 																																			\
 public:																																		\
-	Delegate <> notifyPressedState;																											\
+	Signal <> notifyPressedState;																											\
 																																			\
 protected:																																	\
 	/* We need to declare a variable as volatile when it can be changed unexpectedly (as in an ISR), so the compiler doesn’t remove		*/	\
