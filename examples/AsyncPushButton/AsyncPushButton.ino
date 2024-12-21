@@ -11,7 +11,7 @@
 #define PUSH_BUTTON_PIN		D1
 
 
-ASYNC_PUSHBUTTON_CLASS (Test, I(LoopScheduler).wakeUp ())
+ASYNC_PUSHBUTTON_CLASS (Test, I(ModuleSequencer).requestWakeUp ())
 
 
 
@@ -30,10 +30,10 @@ void setup()
 	I(PushButtonTest).setup (PUSH_BUTTON_PIN);
 
 	I(PushButtonTest).notifyPressedState += []() {
-		Logln(F("Button is pressed"));
+		Logln(F("Button was pressed"));
 	};
 
-	I(LoopScheduler).setup ({ &I(PushButtonTest) });
+	I(ModuleSequencer).setup ({ &I(PushButtonTest) });
 }
 
 //========================================================================================================================
@@ -41,5 +41,5 @@ void setup()
 //========================================================================================================================
 void loop()
 {
-	I(LoopScheduler).loop ();
+	I(ModuleSequencer).loop ();
 }

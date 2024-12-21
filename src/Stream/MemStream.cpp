@@ -4,7 +4,7 @@
 // Author Gerald Guiony
 //************************************************************************************************************************
 
-#ifdef ESP8266
+#if defined (ESP8266) || defined (ESP32)
 
 #include "Print/Logger.h"
 #include "Storage/FileStorage.h"

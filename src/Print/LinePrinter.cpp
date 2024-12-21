@@ -20,7 +20,7 @@ LinePrinter :: LinePrinter () {
 //========================================================================================================================
 void LinePrinter :: flush () {
 	// Empty the buffer
-	_lineToPrint = "";
+	_lineToPrint = F("");
 }
 
 //========================================================================================================================
@@ -28,31 +28,28 @@ void LinePrinter :: flush () {
 //========================================================================================================================
 size_t LinePrinter :: write (uint8_t character) {
 
-	size_t result = 0;
-
 	// Print ?
 	bool doPrint = false;
 
 	// New line ?
-	if ((character == ln) || (character == cr)) {
-		character = ln;
+	if ((character == _ln) || (character == _cr)) {
+		character = _ln;
 		doPrint = true;
 	}
 
 	// Write to Buffer
-	bool concatOk = _lineToPrint.concat ((char)character);
+	_lineToPrint.concat ((char)character);
 
 	if (_lineToPrint.length() >= BUFFER_PRINT_LEN - 2) {	// Limit of buffer (we need at least 2 bytes for LN)
 		doPrint = true;
 	}
 
 	// Send the characters buffered by print.h
-	if (doPrint && concatOk) {								// Print the buffer
+	if (doPrint) {							// Print the buffer
 		notifyRequestLineToPrint (_lineToPrint);
-		result = _lineToPrint.length();
 		flush ();
 	}
 
-	return result;
+	return 1;  // Don't break the print of the buffer !
 }
 

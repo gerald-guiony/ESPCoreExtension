@@ -9,15 +9,16 @@
 #include <Stream.h>
 #include <StreamString.h>
 
-#ifdef ESP8266
-
-void initSketch 				(bool enableDebugSerial = false);
-void reboot						();
+#if defined (ESP8266) || defined (ESP32)
 
 String getChipMemoryStats		();
-String getChipName				();
+uint32_t getChipId 				();
 
 void setModulesPower			(bool on);
+
+const String get_reset_reason	(int cpuNo = 0);
+
+void asyncDelayMillis 			(unsigned int ms);
 
 // Very risky !
 void disableHardwareWatchdog	();
@@ -25,7 +26,10 @@ void enableHardwareWatchdog		();
 
 #endif
 
-void asyncDelayMillis 			(unsigned int ms);
+void initSketch 				(bool enableDebugSerial = false);
+String getChipName				();
+void reboot						();
+
 String timeElapsedSinceBoot		();
 bool strToLong 					(const String & str, long & value);
 void blinkStatus				(int nbBlink);

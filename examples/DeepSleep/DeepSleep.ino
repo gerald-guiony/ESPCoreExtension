@@ -26,17 +26,17 @@ void setup()
 
 	// ------------- Setup
 
-	if (I(LoopScheduler).isWakeUpFromDeepSleep())	{
+	if (I(ModuleSequencer).isDeviceWakeUpFromDeepSleep())	{
 		Logln(F("Wake up from deep sleep mode"));
 	}
 
 	I(PushButtonTest).setup (PUSH_BUTTON_PIN);
 	I(PushButtonTest).notifyPressedState += []() {
-		I(LoopScheduler).enterDeepSleep();
+		I(ModuleSequencer).enterDeepSleep();
 	};
 
-	I(LoopScheduler).setDeepSleepDuration (10000);
-	I(LoopScheduler).setup ({&I(PushButtonTest)});
+	I(ModuleSequencer).setDeepSleepDuration (10000);  // 10s
+	I(ModuleSequencer).setup ({&I(PushButtonTest)});
 }
 
 //========================================================================================================================
@@ -44,5 +44,5 @@ void setup()
 //========================================================================================================================
 void loop()
 {
-	I(LoopScheduler).loop ();
+	I(ModuleSequencer).loop ();
 }

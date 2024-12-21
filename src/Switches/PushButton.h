@@ -11,11 +11,11 @@
 
 #include "Common.h"
 
-#ifdef ESP8266
+#if defined (ESP8266) || defined (ESP32)
 
 
 #define ASYNC_PUSHBUTTON_CLASS(className, asyncInstructions)																				\
-class PushButton##className	: public Looper																									\
+class PushButton##className	: public Module																									\
 {																																			\
 public:																																		\
 	static PushButton##className & getInstance() {																							\

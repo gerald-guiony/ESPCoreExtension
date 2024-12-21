@@ -7,6 +7,11 @@
 #include <Arduino.h>
 #include <HardwareSerial.h>
 
+#ifdef ESP32
+#	include <esp_task_wdt.h>
+#	include <rom/rtc.h>
+#endif
+
 #include "BoardDefs.h"
 #include "Print/Logger.h"
 #include "Tools/Signal.h"
@@ -23,6 +28,9 @@
 #ifdef ESP8266
 #	warning ** ESP8266 defined **
 #endif
+#ifdef ESP32
+#	warning ** ESP32 defined **
+#endif
 #ifdef ARDUINO_ESP8266_NODEMCU_ESP12E
 #	warning ** NODEMCU defined **
 #endif
@@ -32,7 +40,7 @@
 
 
 
-#ifdef ESP8266
+#if defined (ESP8266) || defined (ESP32)
 
 //========================================================================================================================
 //
@@ -95,13 +103,34 @@ String getChipMemoryStats () {
 	return mem;
 }
 
+
+//========================================================================================================================
+//
+//========================================================================================================================
+uint32_t getChipId () {
+
+#ifdef ESP8266
+
+	return ESP.getChipId();
+
+#elif defined (ESP32)
+
+	uint32_t chipId = 0;
+	for (int i = 0; i < 17; i = i + 8) {
+		chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
+	}
+	return chipId;
+
+#endif
+}
+
 //========================================================================================================================
 //
 //========================================================================================================================
 String getChipName () {
 	static StreamString name;
 	if (name.length() == 0) {
-		name << F("ESP") << ESP.getChipId();
+		name << F("ESP") << getChipId ();
 	}
 	return name;
 }
@@ -119,6 +148,73 @@ void setModulesPower (bool on)
 #endif
 
 	//WiFi.setOutputPower(on ? 20.5 : 0.0); // (dBm	max: +20.5dBm min: 0dBm) sets transmit power to 0dbm to lower power consumption, but reduces usable range
+}
+
+//========================================================================================================================
+// Dans le cas d'une grosse attente la methode native delay(ms) peut déclencher le watchdog reset
+// Cette méthode permet également de remplacer la méthode delay(ms) dans les callbacks async  (ESPAsyncWebServer)
+//========================================================================================================================
+void asyncDelayMillis (unsigned int ms) {
+
+#if defined (ESP8266)
+	ESP.wdtFeed();							// Explicitly restart the software watchdog
+//	yield();
+#elif defined (ESP32)
+	esp_task_wdt_reset();
+#endif
+
+	unsigned int loop = 0;
+	unsigned long time = ms * 1000;			// En microseconds..
+
+	while (time > 16383) {					// delayMicroseconds is only accurate to 16383us.
+		delayMicroseconds (16383);
+		time -= 16383;
+		loop ++;
+		if (loop % 10 == 0) {
+#if defined (ESP8266)
+			ESP.wdtFeed();					// Every 163 ms, the ESP wdt is fed and the cpu is yielded for any pending tasks.
+//			yield();						// This should eliminate watchdog timer soft resets
+#elif defined (ESP32)
+			esp_task_wdt_reset();
+#endif
+		}
+	}
+	delayMicroseconds (time);
+}
+
+//========================================================================================================================
+//
+//========================================================================================================================
+const String get_reset_reason(int cpuNo) {
+
+#if defined (ESP8266)
+
+	return ESP.getResetReason ();
+
+#elif defined (ESP32)
+
+	switch (rtc_get_reset_reason(cpuNo)) {
+		case 1:  return F("Vbat power on reset"); break;
+		case 3:  return F("Software reset digital core"); break;
+		case 4:  return F("Legacy watch dog reset digital core"); break;
+		case 5:  return F("Deep Sleep reset digital core"); break;
+		case 6:  return F("Reset by SLC module, reset digital core"); break;
+		case 7:  return F("Timer Group0 Watch dog reset digital core"); break;
+		case 8:  return F("Timer Group1 Watch dog reset digital core"); break;
+		case 9:  return F("RTC Watch dog Reset digital core"); break;
+		case 10: return F("Instrusion tested to reset CPU"); break;
+		case 11: return F("Time Group reset CPU"); break;
+		case 12: return F("Software reset CPU"); break;
+		case 13: return F("RTC Watch dog Reset CPU"); break;
+		case 14: return F("for APP CPU, reset by PRO CPU"); break;
+		case 15: return F("Reset when the vdd voltage is not stable"); break;
+		case 16: return F("RTC Watch dog reset digital core and rtc module"); break;
+		default: return F("NO_MEAN");
+	}
+
+	return "";
+
+#endif
 }
 
 //========================================================================================================================
@@ -185,30 +281,6 @@ String getChipName () {
 
 #endif
 
-
-//========================================================================================================================
-// Dans le cas d'une grosse attente la methode native delay(ms) peut déclencher le watchdog reset
-// Cette méthode permet également de remplacer la méthode delay(ms) dans les callbacks async  (ESPAsyncWebServer)
-//========================================================================================================================
-void asyncDelayMillis (unsigned int ms) {
-
-	ESP.wdtFeed();							// Explicitly restart the software watchdog
-//	yield();
-
-	unsigned int loop = 0;
-	unsigned long time = ms * 1000;			// En microseconds..
-
-	while (time > 16383) {					// delayMicroseconds is only accurate to 16383us.
-		delayMicroseconds (16383);
-		time -= 16383;
-		loop ++;
-		if (loop % 10 == 0) {
-			ESP.wdtFeed();					// Every 163 ms, the ESP wdt is fed and the cpu is yielded for any pending tasks.
-//			yield();						// This should eliminate watchdog timer soft resets
-		}
-	}
-	delayMicroseconds (time);
-}
 
 //========================================================================================================================
 //

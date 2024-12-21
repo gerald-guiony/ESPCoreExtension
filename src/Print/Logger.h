@@ -17,7 +17,7 @@
 // Debug directives
 //
 #ifdef DEBUG
-#	ifdef ESP8266
+#	if defined (ESP8266) || defined (ESP32)
 #		define LOGGER	I(Logger)
 #	else
 #		define LOGGER	Serial
@@ -32,7 +32,7 @@
 
 
 
-#ifdef ESP8266
+#if defined (ESP8266) || defined (ESP32)
 
 #include "Tools/Singleton.h"
 #include "LinePrinter.h"

@@ -13,7 +13,7 @@
 
 #include "Print/Logger.h"
 #include "Storage/FileStorage.h"
-#include "PowerMngt/LoopScheduler.h"
+#include "Module/ModuleSequencer.h"
 
 #include "Stream/MemStream.h"
 #include "Stream/StreamCmdParser.h"
@@ -21,6 +21,5 @@
 #include "Tools/CriticalSection.h"
 #include "Tools/Signal.h"
 #include "Tools/Singleton.h"
-#include "Tools/Tycker.h"
 
 #include "WiFi/WiFiHelper.h"

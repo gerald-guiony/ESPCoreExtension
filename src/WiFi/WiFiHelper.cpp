@@ -4,8 +4,13 @@
 // Author Gerald Guiony
 //************************************************************************************************************************
 
+#ifdef ESP8266
+#	include <ESP8266WiFi.h>							// https://github.com/esp8266/Arduino
+#elif defined(ESP32)
+#	include <WiFi.h>
+#endif
 
-#include <ESP8266WiFi.h>							// https://github.com/esp8266/Arduino
+
 
 #include "Global.h"
 #include "Print/Logger.h"
@@ -114,10 +119,14 @@ void WiFiHelper :: startWiFiAccessPoint () {
 //
 //========================================================================================================================
 void WiFiHelper :: resetWiFiHardware () {
+
+#ifdef ARDUINO_ESP8266_WIO_NODE
 	// RAZ du Wifi
 	WiFi.forceSleepBegin();
 	delay (200);										// Laisse du temps pour reinitialiser le hardware wifi apres un reset par le bouton power sur le Wio Node..
 	WiFi.forceSleepWake();
+#endif
+
 }
 
 //========================================================================================================================
@@ -146,7 +155,12 @@ void WiFiHelper :: disconnectAll () {
 //========================================================================================================================
 void WiFiHelper :: WiFiOn () {
 
+#ifdef ESP8266
 	WiFi.forceSleepWake();
+#endif
+
+    WiFi.disconnect(false);  						// Reconnect the network
+
 	delay(1);
 }
 
@@ -157,7 +171,11 @@ void WiFiHelper :: WiFiOff () {
 
 	disconnectAll();
 	WiFi.mode(WIFI_OFF);
+
+#ifdef ESP8266
 	WiFi.forceSleepBegin();							// Switch off the radio, disable WiFi for 0xFFFFFFFF=4294967295 (32 bits) us which is about 71 minutes
+#endif
+
 	delay(1); 										// Give OS control to wake up wifi. yield() works also
 
 	// WAKE_RF_DISABLED to keep the WiFi radio disabled when we wake up

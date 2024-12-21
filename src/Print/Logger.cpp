@@ -49,10 +49,9 @@ size_t Logger :: write (uint8_t character) {
 
 	static uint32_t lastTime = millis();
 	static uint32_t elapsed = 0;
-	static bool writeLineHeader = true;				// Start New line ?
 
-	// New line writted before ? => start a new line
-	if ((writeLineHeader)&&(_showTime||_showProfiler||_showChipName)) {
+	// start a new line
+	if ((_lineToPrint.isEmpty())&&(_showTime||_showProfiler||_showChipName)) {
 
 		_lineToPrint = F("[");
 
@@ -113,12 +112,7 @@ size_t Logger :: write (uint8_t character) {
 		_lineToPrint.concat (F("] "));
 	}
 
-	size_t result = LinePrinter :: write (character);
-
-	// Start a new line next time ?
-	writeLineHeader = result > 0;
-
-	return result;
+	return LinePrinter :: write (character);
 }
 
 //========================================================================================================================

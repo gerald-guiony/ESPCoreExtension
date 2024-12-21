@@ -4,7 +4,7 @@
 // Author Gerald Guiony
 //************************************************************************************************************************
 
-#ifdef ESP8266
+#if defined (ESP8266) || defined (ESP32)
 
 #include <Arduino.h>
 #include <Stream.h>
@@ -30,9 +30,9 @@ void FileStorage :: init ()
 //========================================================================================================================
 void FileStorage :: spiffsMountFileSystem ()
 {
-	if (!SPIFFS.begin())								// always use this to "mount" the filesystem
+	if (!LittleFS.begin())								// always use this to "mount" the filesystem
 	{
-		Logln(F("ERROR : Can't open the SPIFFS..."));
+		Logln(F("ERROR : Can't open the LittleFS..."));
 		return;
 	}
 }
@@ -42,14 +42,14 @@ void FileStorage :: spiffsMountFileSystem ()
 //========================================================================================================================
 void FileStorage :: spiffsCheckIfFormatted ()
 {
-	File f = SPIFFS.open(CHECK_IF_SPIFFS_FORMATTED_NAMEFILE, "w+");
+	File f = LittleFS.open(CHECK_IF_SPIFFS_FORMATTED_NAMEFILE, "w+");
 	if (f) {
 		f.close();
 	}
 	else {
-		// Next lines have to be done ONLY ONCE!!!!!When SPIFFS is formatted ONCE you can comment these lines out!!
-		Logln(F("Please wait 30 secs for SPIFFS to be formatted..."));
-		SPIFFS.format();
+		// Next lines have to be done ONLY ONCE!!!!!When LittleFS is formatted ONCE you can comment these lines out!!
+		Logln(F("Please wait 30 secs for LittleFS to be formatted..."));
+		LittleFS.format();
 		Logln(F("OK! Spiffs formatted"));
 	}
 }
@@ -60,11 +60,36 @@ void FileStorage :: spiffsCheckIfFormatted ()
 String FileStorage :: spiffsListFiles ()
 {
 	StreamString sstr;
-	Dir dir = SPIFFS.openDir("/");
+
+#ifdef ESP8266
+
+	Dir dir = LittleFS.openDir("/");
 	while (dir.next()) {
 		sstr << dir.fileName() << F(" (") << dir.fileSize() << F(" bytes), ");
 		Logln(dir.fileName() << F("\t\t") << dir.fileSize() << F(" bytes"));
 	}
+
+#elif defined (ESP32)
+
+	File root = LittleFS.open("/", "r");
+
+	if (!root) {
+		Logln("- Fails to open root directory");
+		return sstr;
+	}
+
+	File file = root.openNextFile();
+
+	while (file) {
+
+		sstr << file.name() << F(" (") << file.size() << F(" bytes), ");
+		Logln(file.name() << F("\t\t") << file.size() << F(" bytes"));
+
+		file = root.openNextFile();
+	}
+
+#endif
+
 	return sstr;
 }
 
@@ -75,14 +100,27 @@ void FileStorage :: spiffsInfos ()
 {
 	spiffsListFiles ();
 
+#ifdef ESP8266
+
 	FSInfo fs_info;
-	SPIFFS.info(fs_info);
+	LittleFS.info(fs_info);
+
+	size_t total = fs_info.totalBytes;
+	size_t used = fs_info.usedBytes;
+
+#elif defined (ESP32)
+
+	size_t total = LittleFS.totalBytes();
+	size_t used = LittleFS.usedBytes();
+
+#endif
 
 	Logln(
-		F("Spiffs total bytes : ")		<< fs_info.totalBytes						<< LN <<
-		F("Spiffs used bytes : ")		<< fs_info.usedBytes						<< LN <<
-		F("Spiffs remaining bytes : ")	<< (fs_info.totalBytes - fs_info.usedBytes)
+		F("Spiffs total bytes : ")		<< total	<< LN <<
+		F("Spiffs used bytes : ")		<< used		<< LN <<
+		F("Spiffs remaining bytes : ")	<< (total - used)
 	);
+
 }
 
 //========================================================================================================================
@@ -92,9 +130,18 @@ bool FileStorage :: spiffsCheckRemainingBytes ()
 {
 	size_t result = 0;
 
+#ifdef ESP8266
+
 	FSInfo fs_info;
-	SPIFFS.info(fs_info);
+	LittleFS.info(fs_info);
+
 	result = fs_info.totalBytes - fs_info.usedBytes;
+
+#elif defined (ESP32)
+
+	result = LittleFS.totalBytes() - LittleFS.usedBytes();
+
+#endif
 
 	if (result < MIN_REMAINING_BYTES) {
 		Logln(F("*** WARNING : available spiffs space is too low !"));
@@ -109,10 +156,24 @@ bool FileStorage :: spiffsCheckRemainingBytes ()
 //========================================================================================================================
 void FileStorage :: spiffsRemoveAllFiles ()
 {
-	Dir dir = SPIFFS.openDir("/");
+#ifdef ESP8266
+
+	Dir dir = LittleFS.openDir("/");
 	while (dir.next()) {
-		SPIFFS.remove (dir.fileName());
+		LittleFS.remove (dir.fileName());
 	}
+
+#elif defined (ESP32)
+
+	File root = LittleFS.open("/", "r");
+	File file = root.openNextFile();
+	while (file) {
+		LittleFS.remove (file.name());
+		file = root.openNextFile();
+	}
+
+#endif
+
 	Logln(F("All spiffs files were removed!"));
 }
 
@@ -121,14 +182,29 @@ void FileStorage :: spiffsRemoveAllFiles ()
 //========================================================================================================================
 void FileStorage :: spiffsRemoveAllTmpFiles ()
 {
+#ifdef ESP8266
 //	Logln(F("Removing tmp files :"));
-	Dir dir = SPIFFS.openDir("/");
+	Dir dir = LittleFS.openDir("/");
 	while (dir.next()) {
 		if (dir.fileName().startsWith(F(TMP_NAMEFILE_PREFIX))) {
 			Logln(F("Removing tmp file: ") << dir.fileName());
-			SPIFFS.remove (dir.fileName());
+			LittleFS.remove (dir.fileName());
 		}
 	}
+#elif defined (ESP32)
+
+	File root = LittleFS.open("/", "r");
+	File file = root.openNextFile();
+	while (file) {
+		String fileName = file.name();
+		if (fileName.startsWith(F(TMP_NAMEFILE_PREFIX))) {
+			Logln(F("Removing tmp file: ") << file.name());
+			LittleFS.remove (file.name());
+		}
+		file = root.openNextFile();
+	}
+
+#endif
 }
 
 //========================================================================================================================
@@ -136,7 +212,7 @@ void FileStorage :: spiffsRemoveAllTmpFiles ()
 //========================================================================================================================
 File FileStorage :: createFile (const String & filename)
 {
-	File f = SPIFFS.open (filename, "w+");
+	File f = LittleFS.open (filename, "w+");
 	if (!f) {
 		Logln(F("ERROR : Can't create the file : ") << filename);
 		return f;
@@ -168,7 +244,7 @@ File FileStorage :: createTmpFile ()
 //========================================================================================================================
 bool FileStorage :: printTextFile (const String & filename, Print & printer) {
 
-	File f = SPIFFS.open(filename, "r");
+	File f = LittleFS.open(filename, "r");
 	if (!f) {
 		Logln(F("Warning : Can't open the file : ") << filename);
 		return false;
@@ -189,7 +265,7 @@ bool FileStorage :: printTextFile (const String & filename, Print & printer) {
 //========================================================================================================================
 bool FileStorage :: readTextFile (const String & filename, String & text)
 {
-	File f = SPIFFS.open(filename, "r");
+	File f = LittleFS.open(filename, "r");
 	if (!f) {
 		Logln(F("Warning : Can't open the file : ") << filename);
 		return false;
@@ -205,7 +281,7 @@ bool FileStorage :: readTextFile (const String & filename, String & text)
 //========================================================================================================================
 bool FileStorage :: writeTextFile (const String & filename, const String & text)
 {
-	File f = SPIFFS.open(filename, "w");
+	File f = LittleFS.open(filename, "w");
 	if (!f) {
 		Logln(F("ERROR : Can't create the file : ") << filename);
 		return false;
@@ -221,7 +297,7 @@ bool FileStorage :: writeTextFile (const String & filename, const String & text)
 //========================================================================================================================
 bool FileStorage :: isFileExists (const String & filename)
 {
-	File f = SPIFFS.open(filename, "r");
+	File f = LittleFS.open(filename, "r");
 	if (!f) {
 		return false;
 	}
@@ -243,7 +319,7 @@ bool FileStorage :: setPosFile (int pos, File & file)
 void FileStorage :: deleteFile (const String & filename)
 {
 	if (isFileExists (filename)) {
-		SPIFFS.remove (filename);
+		LittleFS.remove (filename);
 		Logln(F("The file '") << filename << F("' was deleted"));
 	}
 }

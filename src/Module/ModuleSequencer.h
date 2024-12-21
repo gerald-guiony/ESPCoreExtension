@@ -1,5 +1,5 @@
 //************************************************************************************************************************
-// LoopScheduler.h
+// ModuleSequencer.h
 // Version 1.0 June, 2017
 // Author Gerald Guiony
 //************************************************************************************************************************
@@ -16,7 +16,7 @@
 #include "Tools/Singleton.h"
 #include "Tools/Signal.h"
 
-#include "Looper.h"
+#include "Module.h"
 
 
 // ### MODEM-SLEEP ###
@@ -70,7 +70,7 @@ enum class SleepMode {
 #define SHORT_DELAY_BETWEEN_EXEC_MS					1000
 #define LONG_DELAY_BETWEEN_EXEC_MS					10000
 
-#define WAKEUP_DURATION_MS							60000
+#define DELAY_BETWEEN_WAKEUP_MS						60000						// 60s
 
 #define DEEP_SLEEP_DURATION_MS						3600000						// 1h en ms.. with µs, maximum value is 0xFFFFFFFF=4294967295 (32 bits) µs which is about 71 minutes
 
@@ -79,59 +79,60 @@ enum class SleepMode {
 
 //------------------------------------------------------------------------------
 // WARNING : SINGLETON !!!!
-class LoopScheduler : public Looper
+class ModuleSequencer : public Module
 {
-	SINGLETON_CLASS(LoopScheduler)
+	SINGLETON_CLASS(ModuleSequencer)
 
 private:
+	using fn_b = std::function <bool()>;
 
 	SleepMode _sleepMode						= SleepMode::ModemSleep;
 
 	unsigned long _shortDelayBetweenExecMs		= SHORT_DELAY_BETWEEN_EXEC_MS;
 	unsigned long _longDelayBetweenExecMs		= LONG_DELAY_BETWEEN_EXEC_MS;
-	unsigned long _wakeUpDurationMs				= WAKEUP_DURATION_MS;
+	unsigned long _delayBetweenWakeUpMs			= DELAY_BETWEEN_WAKEUP_MS;
 
 	unsigned long _deepSleepDurationMs 			= DEEP_SLEEP_DURATION_MS;
-	std::function <bool()> _isOkToDeepSleepFn	= [] { return false; };
+	fn_b 		  _checkCondToEnterDeepSleep	= [] { return false; };
 
 
 	volatile unsigned long _lastWakeUpTimeStamp	= 0;				// We need to declare a variable as volatile when it can be changed unexpectedly
 																	// (as in an ISR), so the compiler doesn’t remove it due to optimizations
-	unsigned long _lastExecTimeStamp			= 0;
+	unsigned long _previousLoopersExecTimeStamp	= 0;
 
-	bool _wakeUpState							= false;
-	bool _requestReboot							= false;
+	bool _isWakeUpDelayOk						= false;
+	bool _isTimeToReboot						= false;
 
-	std::list <Looper *> 						_loopers;
-	std::list <Looper *> :: iterator 			_itLooper;
+	std::list <Module *> 						_modules;
+	std::list <Module *> :: iterator 			_itModule;
 
 private:
 
-	bool updateWakeUpState						();
-	bool isOkToEnterDeepSleep					() const;
+	bool isWakeUpRequested						();
+	bool isTimeToEnterDeepSleep					() const;
 
 public:
 
-	Signal <bool> notifyWakeUpStateChanged;
+	Signal <bool> notifyWakeUpRequested;
 
 public:
 
 	void requestReboot							();
-	void wakeUp		 							();
+	void requestWakeUp		 					();
 
 	void setShortDelayBetweenExecution			(unsigned long shortDelayBetweenExecMs)		{ _shortDelayBetweenExecMs	= shortDelayBetweenExecMs;	}
 	void setLongDelayBetweenExecution			(unsigned long longDelayBetweenExecMs)		{ _longDelayBetweenExecMs	= longDelayBetweenExecMs;	}
-	void setWakeUpDuration						(unsigned long wakeUpDurationMs)			{ _wakeUpDurationMs	= wakeUpDurationMs;					}
+	void setDelayBetweenWakeUp					(unsigned long delayBetweenWakeUpMs)		{ _delayBetweenWakeUpMs		= delayBetweenWakeUpMs;		}
 
 	void setDeepSleepDuration					(unsigned long deepSleepDurationMs)			{ _deepSleepDurationMs		= deepSleepDurationMs;		}
-	void setEnterDeepSleepCond					(std::function <bool()> isOkToDeepSleepFn)	{ _isOkToDeepSleepFn		= isOkToDeepSleepFn;		}
+	void setConfitionToEnterDeepSleep			(fn_b checkCondToEnterDeepSleep)			{ _checkCondToEnterDeepSleep= checkCondToEnterDeepSleep;}
 	void enterDeepSleepWhenWifiOff				();
 	void enterDeepSleep							() const;
-	bool isWakeUpFromDeepSleep					() const;
+	bool isDeviceWakeUpFromDeepSleep			() const;
 
-	void setLoopers 							(std::list <Looper *> loopers);
+	void setModules 							(std::list <Module *> modules);
 
-	void setup									(std::list <Looper *> loopers, SleepMode sleepMode = SleepMode::ModemSleep);
+	void setup									(std::list <Module *> modules, SleepMode sleepMode = SleepMode::ModemSleep);
 	void loop									() override;
 };
 

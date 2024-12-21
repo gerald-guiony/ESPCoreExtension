@@ -8,6 +8,32 @@
 
 #include "Global.h"
 
+
+
+typedef struct sPin         	// used for input pins (pins for digitalRead)
+{
+	const uint8_t pin;         	// the GPIO
+	const char *label;         	// a speaking name for the pin
+}
+Pin;
+
+typedef struct sPWMPin			// used for PWM pins (pins for analogWrite)
+{
+	const uint8_t pin;         	// the GPIO
+	const char *label;         	// a speaking name for the pin
+	uint16_t value;            	// the current PWM level
+}
+PWMPin;
+
+typedef struct sOutputPin   	// used for output pins (pins for digitalWrite mainly)
+{
+	const uint8_t pin;         	// the GPIO
+	const char *label;         	// a speaking name for the pin
+	const uint8_t ON;          	// level for ON (for active high set to HIGH)
+}
+OutputPin;
+
+
 /*
 #if ARDUINO_VERSION <= 106
 #	warning Warning Arduino version <= 106 !!
@@ -89,21 +115,57 @@
 #	define BLINKLED		D4
 #	define USER_BTN		FLASH_BTN
 
-
 // HardwareSerial Serial(UART0);
 // HardwareSerial Serial1(UART1);
 
 #endif
 
+#ifdef ARDUINO_WT32_ETH01
+
+// assign pins to arrays:
+// Pins, which should be readed
+constexpr Pin inputPin[] {
+  // the pin    a name
+  //{1,    "IO01"}, 	// reserved for TX0 - used for first upload
+  //{3,    "IO03"}, 	// reserved for RX0 - used for first upload
+  {0,	"IO00"	},   	// needed to bring ESP into flash mode
+  {39,  "I39"	},    	// input only
+  {36,  "I36"	},    	// input only
+  {15,  "IO15"	},
+  {14,  "IO14"	},
+  {12,  "IO12"	},
+  {35,  "I35"	},    	// input only
+};
+
+// Pins, which can be switched on or off
+constexpr OutputPin outputPin[] {
+  // pin  a name  LOW active or HIGH active
+  {32,	"IO32", 	LOW},
+  {33,  "IO33", 	LOW},
+  {17,  "IO17 LED", LOW},   // TX2; green LED (LOW active)
+  {5,   "IO05 LED", LOW}    // RX2; green LED (LOW active)
+};
+
+// Pins, which can be dimmed
+// the ESP32 can use a maximum of 16 pins for PWM
+constexpr PWMPin pwmPin[] {
+  //pin   a name  a PWM value
+  {4,	"IO4",	1023},
+  {2,	"IO2",	511	},
+};
+
+#	define FLASH_BTN	0
+#	define BLINKLED		17
+#	define USER_BTN		FLASH_BTN
+
+#endif
 
 
 //------------------------------------------------------------------------------
 // Visual indicator
 //
 
-#if defined(ESP8266)
-
-//#	warning -- ESP8266 defined --
+#if defined(ESP8266) || defined(ESP32)
 
 #	define BLINKLED_ON()	({ if (getPinMode(BLINKLED) == OUTPUT) digitalWrite(BLINKLED, LOW);	})			// Inverted logic
 #	define BLINKLED_OFF()	({ if (getPinMode(BLINKLED) == OUTPUT) digitalWrite(BLINKLED, HIGH);})

@@ -30,10 +30,10 @@ void setup()
 
 	I(PushButtonTest).notifyPressedState += []() {
 		Logln (F("Button was pressed"));
-		I(LoopScheduler).wakeUp ();
+		I(ModuleSequencer).requestWakeUp ();
 	};
 
-	I(LoopScheduler).setup ({ &I(PushButtonTest) });
+	I(ModuleSequencer).setup ({ &I(PushButtonTest) });
 }
 
 //========================================================================================================================
@@ -41,5 +41,5 @@ void setup()
 //========================================================================================================================
 void loop()
 {
-	I(LoopScheduler).loop ();
+	I(ModuleSequencer).loop ();
 }

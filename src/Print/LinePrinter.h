@@ -15,8 +15,8 @@
 //
 template<class T> inline Print & operator <<(Print & printer, T arg) { printer.print(arg); return printer; }
 
-#define cr				'\r'
-#define ln				'\n'
+#define _cr				'\r'
+#define _ln				'\n'
 #define LN				F("\n")
 
 
@@ -40,7 +40,7 @@ public:
 
 	LinePrinter 						();
 
-	void flush							();
+	virtual void flush					() override;
 
 	// Print
 	virtual size_t write				(uint8_t) override;
@@ -51,7 +51,8 @@ public:
 //========================================================================================================================
 //
 //========================================================================================================================
-template <typename IntType> String n2hexstr (IntType w, size_t hex_len = sizeof(IntType)<<1) {
+template <typename IntType>
+String n2hexstr (IntType w, size_t hex_len = sizeof(IntType)<<1) {
     static const char* digits = "0123456789ABCDEF";
     String rc;
 	rc.reserve (hex_len);

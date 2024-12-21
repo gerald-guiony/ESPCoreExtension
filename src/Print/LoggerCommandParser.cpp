@@ -8,7 +8,7 @@
 #include <WCharacter.h>
 
 #include "Global.h"
-#include "PowerMngt/LoopScheduler.h"
+#include "Module/ModuleSequencer.h"
 
 #include "Logger.h"
 #include "LoggerCommandParser.h"
@@ -73,7 +73,7 @@ bool LoggerCommandParser :: parse (char byteRcv, Print & printer) {
 		printer << F("Bye bye...") << LN;
 
 		notifyCloseAllSessionResquested ();
-		I(LoopScheduler).requestReboot ();
+		I(ModuleSequencer).requestReboot ();
 		break;
 
 	default:
