@@ -23,7 +23,7 @@ void setup()
 
 	// ------------ Global Init
 
-	initSketch();
+	initSketch(true);
 
 	// ------------- Setup
 
