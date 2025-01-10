@@ -26,7 +26,6 @@ To use ESPCoreExtension, you need:
 
 To use this library you might need to have the version 3.1.2 of [Arduino core for the ESP8266](https://github.com/esp8266/Arduino) or 3.0.7 of [Arduino core for the ESP32](https://github.com/espressif/arduino-esp32)
 
-
 ## Examples
 
 1. [PushButton](https://github.com/gerald-guiony/ESPCoreExtension/blob/master/examples/PushButton/PushButton.ino)

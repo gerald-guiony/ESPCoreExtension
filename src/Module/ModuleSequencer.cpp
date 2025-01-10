@@ -184,7 +184,8 @@ void ModuleSequencer :: setup (std::list <Module *> modules, SleepMode sleepMode
 				esp_wifi_set_ps (WIFI_PS_MAX_MODEM);
 
 				// Another critical feature to reduce power consumption is cutting the CPU frequencies
-				setCpuFrequencyMhz(/* The only value admitted : 240, 160, 80, 40, 20, 10 */ 40);
+				// if code using wifi or bt/ble, 80MHz is minimum you can go
+				setCpuFrequencyMhz(/* The only value admitted : 240, 160, 80, 40, 20, 10 */ 80);
 #endif
 
 			}
