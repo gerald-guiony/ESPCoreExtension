@@ -65,7 +65,7 @@ void initSketch (bool enableDebugSerial /*= false */) {
 
 	}
 
-	//	I(Logger).showTime (true);						// To show time
+		I(Logger).showTime (true);						// To show time
 	//	I(Logger).showProfiler (true);					// To show profiler - time between messages of Debug - Good to "begin ...." and "end ...." messages
 	//	I(Logger).showColors (false);					// Colors
 		I(Logger).showChipName (true);					// Name of this Esp8266

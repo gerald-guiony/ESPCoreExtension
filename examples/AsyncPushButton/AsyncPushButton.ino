@@ -1,39 +1,40 @@
 //************************************************************************************************************************
-// AsyncPushButton.ino
-// Version 1.0 February, 2020
+// PushButton.ino
+// Version 2.0 Jan, 2025
 // Author Gerald Guiony
 //************************************************************************************************************************
 
 #include <Common.h>
 #include <Switches/PushButton.h>
 
+// Ouput in the Arduino IDE serial monitor :
+//
+// [t:76ms ESP8822001] ******* Chip is (re)booting *******
+// [t:5319ms ESP8822001] Interrupt (ISR) : Button was pressed
+// [t:6158ms ESP8822001] Thread loop : Button was pressed
+//
+// => the message appears instantly with the ISR method when the button is pressed
 
 #define PUSH_BUTTON_PIN		D1
 
-
-ASYNC_PUSHBUTTON_CLASS (Test, I(ModuleSequencer).requestWakeUp ())
-
-
+PushButton myPushButton (PUSH_BUTTON_PIN, [](){ Logln (F("Interrupt (ISR) : Button was pressed"));} );
 
 //========================================================================================================================
 //
 //========================================================================================================================
 void setup()
 {
-
 	// ------------ Global Init
 
-	initSketch(true);
+	initSketch (true);
 
 	// ------------- Setup
 
-	I(PushButtonTest).setup (PUSH_BUTTON_PIN);
-
-	I(PushButtonTest).notifyPressedState += []() {
-		Logln(F("Button was pressed"));
+	myPushButton.notifyPressedState += []() {
+		Logln (F("Thread loop : Button was pressed"));
 	};
-
-	I(ModuleSequencer).setup ({ &I(PushButtonTest) });
+	
+	I(ModuleSequencer).setup ({ &myPushButton });
 }
 
 //========================================================================================================================

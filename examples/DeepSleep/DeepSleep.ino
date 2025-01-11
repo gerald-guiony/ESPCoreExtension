@@ -1,6 +1,6 @@
 //************************************************************************************************************************
 // DeepSleep.ino
-// Version 1.0 February, 2020
+// Version 2.0 Jan, 2025
 // Author Gerald Guiony
 //************************************************************************************************************************
 
@@ -12,8 +12,7 @@
 
 #define PUSH_BUTTON_PIN D1
 
-PUSHBUTTON_CLASS(Test)
-
+PushButton myPushButton (PUSH_BUTTON_PIN);
 
 //========================================================================================================================
 //
@@ -30,13 +29,12 @@ void setup()
 		Logln(F("Wake up from deep sleep mode"));
 	}
 
-	I(PushButtonTest).setup (PUSH_BUTTON_PIN);
-	I(PushButtonTest).notifyPressedState += []() {
+	myPushButton.notifyPressedState += []() {
 		I(ModuleSequencer).enterDeepSleep();
 	};
 
 	I(ModuleSequencer).setDeepSleepDuration (10000);  // 10s
-	I(ModuleSequencer).setup ({&I(PushButtonTest)});
+	I(ModuleSequencer).setup ({ &myPushButton });
 }
 
 //========================================================================================================================

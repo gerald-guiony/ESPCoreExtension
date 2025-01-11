@@ -1,39 +1,33 @@
 //************************************************************************************************************************
 // PushButton.ino
-// Version 1.0 February, 2020
+// Version 2.0 Jan, 2025
 // Author Gerald Guiony
 //************************************************************************************************************************
 
 #include <Common.h>
 #include <Switches/PushButton.h>
 
-
 #define PUSH_BUTTON_PIN		D1
 
-PUSHBUTTON_CLASS (Test)
-
-
+PushButton myPushButton (PUSH_BUTTON_PIN);
 
 //========================================================================================================================
 //
 //========================================================================================================================
 void setup()
 {
-
 	// ------------ Global Init
 
 	initSketch (true);
 
 	// ------------- Setup
 
-	I(PushButtonTest).setup (PUSH_BUTTON_PIN);
-
-	I(PushButtonTest).notifyPressedState += []() {
+	myPushButton.notifyPressedState += []() {
 		Logln (F("Button was pressed"));
 		I(ModuleSequencer).requestWakeUp ();
 	};
 
-	I(ModuleSequencer).setup ({ &I(PushButtonTest) });
+	I(ModuleSequencer).setup ({ &myPushButton });
 }
 
 //========================================================================================================================
