@@ -8,8 +8,8 @@
 
 #include <Arduino.h>
 
-#include "Global.h"
-#include "BoardDefs.h"
+#include "EspBoard.h"
+#include "EspBoardDefs.h"
 
 #include "Print/Logger.h"
 #include "Storage/FileStorage.h"

@@ -19,63 +19,16 @@
 #include "Module.h"
 
 
-// ### MODEM-SLEEP ###
+#define SHORT_DELAY_BETWEEN_EXEC_S					1
+#define LONG_DELAY_BETWEEN_EXEC_S					10
 
-// Modem-sleep is the default mode for the ESP8266. However, it's only enabled when you're connected to an access point.
-// While in Modem-sleep, the ESP8266 will disable the modem (WiFi) as much as possible. It turns off the modem between DTIM Beacon intervals.
-// This interval is set by your router.
+#define DELAY_BETWEEN_WAKEUP_S						60
 
-// Wroom-02 :
-// Modem-sleep is used when such applications as PWM or I2S require the CPU to be working. In cases
-// where Wi-Fi connectivity is maintained and data transmission is not required, the Wi-Fi Modem circuit can
-// be shut down to save power, according to 802.11 standards (such as U-APSD). For example, in DTIM3,
-// when ESP8266EX sleeps for 300 ms and wakes up for 3 ms to receive Beacon packages from AP, the
-// overall average current consumption is about 15 mA.
-
-// ### LIGHT-SLEEP ###
-
-// Light-sleep performs the same function as Modem-sleep, but also turns off the system clock and suspends the CPU. The CPU isn't off; it's just idling.
-// During Light-Sleep, the CPU may be suspended in applications like Wi-Fi switch. Without data transmission,
-// the Wi-Fi Modem circuit can be turned off and CPU suspended to save power according to the 802.11 standard (U-APSD).
-
-// Wroom-02 :
-// Light-sleep is used for applications whose CPU may be suspended, such as Wi-Fi switch. In cases
-// where Wi-Fi connectivity is maintained and data transmission is not required, the Wi-Fi Modem circuit and
-// CPU can be shut down to save power, according to 802.11 standards (such as U-APSD). For example, in
-// DTIM3, when ESP8266EX sleeps for 300 ms and wakes up for 3 ms to receive Beacon packages from
-// AP, the overall average current consumption is about 0.9 mA.
-
-// ### DEEP-SLEEP ###
-
-// Everything is off but the Real Time Clock (RTC), which is how the computer keeps time. Since everything is off, this is the most power efficient option.
-// When the chip goes out of deep sleep mode, it starts again at the start of the setup() function
-// mode is one of WAKE_RF_DEFAULT, WAKE_RFCAL, WAKE_NO_RFCAL, WAKE_RF_DISABLED
-// GPIO16 needs to be tied to RST pin to wake from deepSleep (On the NodeMCU, GPIO 16 is represented as D0)
-// https://www.losant.com/blog/making-the-esp8266-low-powered-with-deep-sleep
-
-// Wroom-02 :
-// Deep-sleep is for applications that do not require Wi-Fi connectivity but only transmit data over long time
-// lags, e.g., a temperature sensor that measures temperature every 100s. For example, when ESP8266EX
-// sleeps for 300s then wakes up to connect to AP (taking about 0.3 ~ 1s), the overall average current
-// consumption is far less than 1 mA. The current consumption of 20 μA was obtained at the voltage of 2.5V
-// GPIO16; used for Deep-sleep wake-up when connected to RST pin.
-
-enum class SleepMode {
-	ModemSleep			= 1,
-	AutoLightSleep		= 2,
-	ForcedLightSleep	= 3,
-	DeepSleep			= 4
-};
-
-#define SHORT_DELAY_BETWEEN_EXEC_MS					1000
-#define LONG_DELAY_BETWEEN_EXEC_MS					10000
-
-#define DELAY_BETWEEN_WAKEUP_MS						60000						// 60s
-
-#define DEEP_SLEEP_DURATION_MS						3600000						// 1h en ms.. with µs, maximum value is 0xFFFFFFFF=4294967295 (32 bits) µs which is about 71 minutes
-
-#define DEEPSLEEP_NAMEFILE							"/deepsleep.txt"
-
+#ifdef ESP8266
+#	define DEEP_SLEEP_DURATION_S					4260	// maximum value is 0xFFFFFFFF=4294967295 (32 bits) µs which is about 71 minutes = 4260s
+#elif defined (ESP32)
+#	define DEEP_SLEEP_DURATION_S					7200	// = 2h, maximum value is 0xFFFFFFFFFFFFFFFF= (64 bits) µs
+#endif
 
 //------------------------------------------------------------------------------
 // WARNING : SINGLETON !!!!
@@ -86,13 +39,11 @@ class ModuleSequencer : public Module
 private:
 	using fn_b = std::function <bool()>;
 
-	SleepMode _sleepMode						= SleepMode::ModemSleep;
+	unsigned long _shortDelayBetweenExecMs		= SHORT_DELAY_BETWEEN_EXEC_S * 1000;
+	unsigned long _longDelayBetweenExecMs		= LONG_DELAY_BETWEEN_EXEC_S * 1000;
+	unsigned long _delayBetweenWakeUpMs			= DELAY_BETWEEN_WAKEUP_S * 1000;
 
-	unsigned long _shortDelayBetweenExecMs		= SHORT_DELAY_BETWEEN_EXEC_MS;
-	unsigned long _longDelayBetweenExecMs		= LONG_DELAY_BETWEEN_EXEC_MS;
-	unsigned long _delayBetweenWakeUpMs			= DELAY_BETWEEN_WAKEUP_MS;
-
-	unsigned long _deepSleepDurationMs 			= DEEP_SLEEP_DURATION_MS;
+	unsigned long long _deepSleepDurationMs 	= DEEP_SLEEP_DURATION_S * 1000;
 	fn_b 		  _checkCondToEnterDeepSleep	= [] { return false; };
 
 
@@ -125,14 +76,12 @@ public:
 	void setDelayBetweenWakeUp					(unsigned long delayBetweenWakeUpMs)		{ _delayBetweenWakeUpMs		= delayBetweenWakeUpMs;		}
 
 	void setDeepSleepDuration					(unsigned long deepSleepDurationMs)			{ _deepSleepDurationMs		= deepSleepDurationMs;		}
-	void setConfitionToEnterDeepSleep			(fn_b checkCondToEnterDeepSleep)			{ _checkCondToEnterDeepSleep= checkCondToEnterDeepSleep;}
+	void setConditionToEnterDeepSleep			(fn_b checkCondToEnterDeepSleep)			{ _checkCondToEnterDeepSleep= checkCondToEnterDeepSleep;}
 	void enterDeepSleepWhenWifiOff				();
-	void enterDeepSleep							() const;
-	bool isDeviceWakeUpFromDeepSleep			() const;
 
 	void setModules 							(std::list <Module *> modules);
 
-	void setup									(std::list <Module *> modules, SleepMode sleepMode = SleepMode::ModemSleep);
+	void setup									(std::list <Module *> modules);
 	void loop									() override;
 };
 

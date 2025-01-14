@@ -21,19 +21,18 @@ void setup()
 {
 	// ------------ Global Init
 
-	initSketch(true);
+	EspBoard::init(true);
 
 	// ------------- Setup
 
-	if (I(ModuleSequencer).isDeviceWakeUpFromDeepSleep())	{
+	if (EspBoard::isWakeUpFromDeepSleep())	{
 		Logln(F("Wake up from deep sleep mode"));
 	}
 
 	myPushButton.notifyPressedState += []() {
-		I(ModuleSequencer).enterDeepSleep();
+		EspBoard::enterDeepSleep(10000); // 10s
 	};
-
-	I(ModuleSequencer).setDeepSleepDuration (10000);  // 10s
+ 
 	I(ModuleSequencer).setup ({ &myPushButton });
 }
 

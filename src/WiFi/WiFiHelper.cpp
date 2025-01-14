@@ -12,7 +12,7 @@
 
 
 
-#include "Global.h"
+#include "EspBoard.h"
 #include "Print/Logger.h"
 
 #include "WiFiHelper.h"
@@ -105,7 +105,7 @@ void WiFiHelper :: startWiFiAccessPoint () {
 
 	Logln(F("Starting access point.."));
 
-	String AP_Name = getChipName();
+	String AP_Name = EspBoard::getDeviceName();
 
 	Logln(F("Configuring wifi access point : ") << AP_Name);
 
