@@ -9,7 +9,7 @@
 #include <Arduino.h>
 
 #include "EspBoard.h"
-#include "BoardDefs.h"
+#include "EspBoardDefs.h"
 
 #include "Print/Logger.h"
 #include "Storage/FileStorage.h"

@@ -15,7 +15,7 @@
 #endif
 
 
-#include "BoardDefs.h"
+#include "EspBoard.h"
 #include "Print/Logger.h"
 #include "Storage/FileStorage.h"
 #include "WiFi/WiFiHelper.h"

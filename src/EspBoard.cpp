@@ -12,7 +12,7 @@
 #	include <rom/rtc.h>
 #endif
 
-#include "BoardDefs.h"
+#include "EspBoardDefs.h"
 #include "Print/Logger.h"
 #include "Tools/Signal.h"
 #include "Storage/FileStorage.h"
