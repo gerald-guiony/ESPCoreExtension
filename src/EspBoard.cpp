@@ -1,6 +1,6 @@
 //************************************************************************************************************************
-// Global.cpp
-// Version 1.0 June, 2017
+// EspBoard.cpp
+// Version 1.0 Jan, 2025
 // Author Gerald Guiony
 //************************************************************************************************************************
 
@@ -18,8 +18,10 @@
 #include "Storage/FileStorage.h"
 #include "WiFi/WiFiHelper.h"
 
-#include "Global.h"
+#include "EspBoard.h"
 
+
+#define DEEPSLEEP_NAMEFILE							"/deepsleep.txt"
 
 
 #ifdef DEBUG
@@ -39,16 +41,13 @@
 #endif
 
 
-
-#if defined (ESP8266) || defined (ESP32)
-
 //========================================================================================================================
 //
 //========================================================================================================================
-void initSketch (bool enableDebugSerial /*= false */) {
+void EspBoard :: init (bool enableDebugSerial /*= false */) {
 
 	WiFiHelper::WiFiOff ();								// Save power during start up
-	setModulesPower (false);							// Power OFF the groove socket
+	setPortPower (false);								// Power OFF the groove socket
 
 #ifdef DEBUG
 
@@ -65,7 +64,7 @@ void initSketch (bool enableDebugSerial /*= false */) {
 
 	}
 
-		I(Logger).showTime (true);						// To show time
+	//	I(Logger).showTime (true);						// To show time
 	//	I(Logger).showProfiler (true);					// To show profiler - time between messages of Debug - Good to "begin ...." and "end ...." messages
 	//	I(Logger).showColors (false);					// Colors
 		I(Logger).showChipName (true);					// Name of this Esp8266
@@ -74,20 +73,29 @@ void initSketch (bool enableDebugSerial /*= false */) {
 
 #endif
 
-	if (BLINKLED >= 0) pinMode (BLINKLED, OUTPUT);		// Set led pin as output
+#ifdef BLINKLED
+	pinMode (BLINKLED, OUTPUT);							// Set led pin as output
+#endif
 
 	Logln (F("\n\n******* Chip is (re)booting *******"));
 
 	FileStorage::init ();								// Init file system
+
+	if (!isWakeUpFromDeepSleep ()) {
+		FileStorage::deleteFile (DEEPSLEEP_NAMEFILE);	// Efface le fichier "deepsleep.txt"
+	}
 }
 
 
 //========================================================================================================================
 //
 //========================================================================================================================
-void reboot () {
-	pinMode (16, OUTPUT);								// Nécessaire quand GPIO16 est relié au RST pin (DeepSleep)
-	digitalWrite (16, LOW);
+void EspBoard :: reboot () {
+
+#ifdef ARDUINO_ESP8266_NODEMCU_ESP12E
+	pinMode (D0, OUTPUT);								// Nécessaire quand GPIO16 est relié au RST pin (DeepSleep)
+	digitalWrite (D0, LOW);
+#endif
 
 	asyncDelayMillis (2000);
 	ESP.restart();
@@ -97,17 +105,16 @@ void reboot () {
 //========================================================================================================================
 //
 //========================================================================================================================
-String getChipMemoryStats () {
+const String EspBoard :: getDeviceMemoryStats () {
 	StreamString mem;
 	mem << F("Free ram memory = ") << ESP.getFreeHeap() << F(" bytes") << LN;
 	return mem;
 }
 
-
 //========================================================================================================================
 //
 //========================================================================================================================
-uint32_t getChipId () {
+uint32_t EspBoard :: getDeviceId () {
 
 #ifdef ESP8266
 
@@ -127,10 +134,10 @@ uint32_t getChipId () {
 //========================================================================================================================
 //
 //========================================================================================================================
-String getChipName () {
+const String EspBoard :: getDeviceName () {
 	static StreamString name;
 	if (name.length() == 0) {
-		name << F("ESP") << getChipId ();
+		name << F("ESP") << getDeviceId ();
 	}
 	return name;
 }
@@ -138,8 +145,8 @@ String getChipName () {
 //========================================================================================================================
 //
 //========================================================================================================================
-void setModulesPower (bool on)
-{
+void EspBoard :: setPortPower (bool on) {
+
 #ifdef ARDUINO_ESP8266_WIO_NODE
 	// The power supply of Grove sockets is controlled by a MOSFET switch which is gated by GPIO 15. So you must pull up
 	// GPIO 15 in your Arduino sketch to power on the Grove system
@@ -154,7 +161,7 @@ void setModulesPower (bool on)
 // Dans le cas d'une grosse attente la methode native delay(ms) peut déclencher le watchdog reset
 // Cette méthode permet également de remplacer la méthode delay(ms) dans les callbacks async  (ESPAsyncWebServer)
 //========================================================================================================================
-void asyncDelayMillis (unsigned int ms) {
+void EspBoard :: asyncDelayMillis (unsigned int ms) {
 
 #if defined (ESP8266)
 	ESP.wdtFeed();							// Explicitly restart the software watchdog
@@ -185,7 +192,7 @@ void asyncDelayMillis (unsigned int ms) {
 //========================================================================================================================
 //
 //========================================================================================================================
-const String get_reset_reason(int cpuNo) {
+const String EspBoard :: getResetReason(int cpuNo) {
 
 #if defined (ESP8266)
 
@@ -220,72 +227,7 @@ const String get_reset_reason(int cpuNo) {
 //========================================================================================================================
 //
 //========================================================================================================================
-void disableHardwareWatchdog () {
-  *((volatile uint32_t*) 0x60000900) &= ~(1); // Hardware WDT OFF
-}
-
-//========================================================================================================================
-//
-//========================================================================================================================
-void enableHardwareWatchdog () {
-  *((volatile uint32_t*) 0x60000900) |= 1; // Hardware WDT ON
-}
-
-#else
-
-//========================================================================================================================
-//
-//========================================================================================================================
-void initSketch (bool enableDebugSerial /*= true */) {
-
-#ifdef DEBUG
-
-	if (enableDebugSerial) {
-		Serial.begin(115200);							// change BAUD rate as required
-		while (!Serial); 								// wait until Serial is established - required on some Platforms
-		Serial.setDebugOutput (true);
-		Serial << F("Serial is up") << LN;
-	}
-
-#endif
-
-	Logln (F("******* Chip is (re)booting *******"));
-}
-
-//========================================================================================================================
-//
-//========================================================================================================================
-void reboot () {
-}
-
-//========================================================================================================================
-//
-//========================================================================================================================
-String getChipMemoryStats () {
-
-	extern int __heap_start, *__brkval;
-	int v;
-	uint32_t free = (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
-
-	StreamString mem;
-	mem << F("Free ram memory = ")	<< free	<< F(" bytes") << LN;
-	return mem;
-}
-
-//========================================================================================================================
-//
-//========================================================================================================================
-String getChipName () {
-	return (F("Arduino"));
-}
-
-#endif
-
-
-//========================================================================================================================
-//
-//========================================================================================================================
-String timeElapsedSinceBoot () {
+const String EspBoard :: getTimeElapsedSinceBoot () {
 
 	unsigned long runMillis = millis();
 	unsigned long allSeconds = runMillis / 1000;
@@ -304,32 +246,8 @@ String timeElapsedSinceBoot () {
 //========================================================================================================================
 //
 //========================================================================================================================
-bool strToLong (const String & str, long & value) {
+int EspBoard :: getPinMode (uint8_t pin) {
 
-	if (str.length () <= 0) return false;
-	if ((str[0] != '-') && !isDigit (str[0])) return false;
-	if ((str[0] == '-') && (str.length ()<=1)) return false;
-
-	for (int i=1; i<str.length (); i++) {
-		if (!isdigit (str [i])) return false;
-	}
-
-	value = str.toInt();
-	return true;
-}
-
-//========================================================================================================================
-//
-//========================================================================================================================
-void blinkStatus (int nbBlink) {
-	do {BLINK(); asyncDelayMillis (100); nbBlink--;} while (nbBlink > 0);
-}
-
-//========================================================================================================================
-//
-//========================================================================================================================
-int getPinMode (uint8_t pin)
-{
   if (pin >= NUM_DIGITAL_PINS) return (-1);
 
   uint8_t bit = digitalPinToBitMask(pin);
@@ -339,4 +257,122 @@ int getPinMode (uint8_t pin)
 
   volatile uint32_t *out = portOutputRegister(port);
   return ((*out & bit) ? INPUT_PULLUP : INPUT);
+}
+
+//========================================================================================================================
+//
+//========================================================================================================================
+void EspBoard :: blinkOn () {
+#if defined(BLINKLED)
+	if (EspBoard::getPinMode(BLINKLED) == OUTPUT) {
+		digitalWrite(BLINKLED, LOW);					// Inverted logic !!
+	}
+#else
+	Log(F(".");
+#endif
+}
+
+//========================================================================================================================
+//
+//========================================================================================================================
+void EspBoard :: blinkOff () {
+#if defined(BLINKLED)
+	if (EspBoard::getPinMode(BLINKLED) == OUTPUT) {
+		digitalWrite(BLINKLED, HIGH);
+	}
+#endif
+}
+
+//========================================================================================================================
+//
+//========================================================================================================================
+void EspBoard :: blink () {
+	blinkOn();
+	asyncDelayMillis (5);
+	blinkOff();
+}
+
+//========================================================================================================================
+//
+//========================================================================================================================
+void EspBoard :: blinks (int nbBlink) {
+	do {blink(); asyncDelayMillis (100); nbBlink--;} while (nbBlink > 0);
+}
+
+//========================================================================================================================
+// ### DEEP-SLEEP ###
+//========================================================================================================================
+void EspBoard :: enterDeepSleep (unsigned long deepSleepDurationMs) {
+
+	Logln ("Enter in deep sleep mode..");
+
+	if (!FileStorage::isFileExists(DEEPSLEEP_NAMEFILE)) {				// Si le fichier deepSleep.txt n'existe pas
+		FileStorage::createFile(DEEPSLEEP_NAMEFILE);					// Creation du fichier deepsleep.txt
+	}
+
+	WiFiHelper::disconnectAll ();
+
+#ifdef ESP8266
+
+	// With ESP.deepSleep(0), esp will be going to sleep forever.
+	ESP.deepSleep(deepSleepDurationMs * 1000 /* µs */, WAKE_RF_DEFAULT /*WAKE_RF_DISABLED*/);	// WAKE_RF_DISABLED : this prevents the Wifi hardware from booting up after deep sleep
+
+#elif defined (ESP32)
+
+	esp_sleep_enable_timer_wakeup(deepSleepDurationMs * 1000);
+	esp_deep_sleep_start();
+
+#endif
+																								// Note that there is no way to enable it again without deep sleeping again
+	delay(100);
+}
+
+//========================================================================================================================
+//
+//========================================================================================================================
+bool EspBoard :: isWakeUpFromDeepSleep () {
+
+#ifdef ESP8266
+
+	rst_info *resetInfo;
+	resetInfo = ESP.getResetInfoPtr();
+
+	if (resetInfo->reason == REASON_DEEP_SLEEP_AWAKE) {
+		return (FileStorage::isFileExists(DEEPSLEEP_NAMEFILE));
+	}
+
+#elif defined (ESP32)
+
+	esp_sleep_wakeup_cause_t wakeup_reason = esp_sleep_get_wakeup_cause();
+
+	if ((wakeup_reason == ESP_SLEEP_WAKEUP_EXT0 ) ||
+		(wakeup_reason == ESP_SLEEP_WAKEUP_EXT1 ) ||
+		(wakeup_reason == ESP_SLEEP_WAKEUP_TIMER ) ||
+		(wakeup_reason == ESP_SLEEP_WAKEUP_TOUCHPAD ) ||
+		(wakeup_reason == ESP_SLEEP_WAKEUP_ULP ))
+	{
+		return (FileStorage::isFileExists(DEEPSLEEP_NAMEFILE));
+	}
+
+#endif
+
+	return false;
+}
+
+//========================================================================================================================
+// Very risky !
+//========================================================================================================================
+void EspBoard :: disableHardwareWatchdog () {
+#ifdef ESP8266
+  *((volatile uint32_t*) 0x60000900) &= ~(1); // Hardware WDT OFF
+#endif
+}
+
+//========================================================================================================================
+//
+//========================================================================================================================
+void EspBoard :: enableHardwareWatchdog () {
+#ifdef ESP8266
+  *((volatile uint32_t*) 0x60000900) |= 1; // Hardware WDT ON
+#endif
 }

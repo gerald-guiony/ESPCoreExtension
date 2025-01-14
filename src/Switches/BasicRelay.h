@@ -9,7 +9,7 @@
 
 #include <Arduino.h>
 
-#include "Global.h"
+#include "EspBoard.h"
 
 
 
@@ -32,13 +32,13 @@ private:
 public:
 
 	BasicRelay		(uint8_t pin) : _pin(pin)	{	pinMode (_pin, OUTPUT);
-													open ();						}
+													open ();							}
 
 	void open		()							{ 	digitalWrite (_pin, LOW);
 													// Power OFF the Grove sockets
-													setModulesPower (false);		}
+													EspBoard::setPortPower (false);		}
 
 	void close		()							{ 	// Power ON the Grove sockets
-													setModulesPower (true);
-													digitalWrite (_pin, HIGH );		}
+													EspBoard::setPortPower (true);
+													digitalWrite (_pin, HIGH );			}
 };

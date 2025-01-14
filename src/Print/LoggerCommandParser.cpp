@@ -7,7 +7,7 @@
 #include <Arduino.h>
 #include <WCharacter.h>
 
-#include "Global.h"
+#include "EspBoard.h"
 #include "Module/ModuleSequencer.h"
 
 #include "Logger.h"
@@ -53,7 +53,7 @@ bool LoggerCommandParser :: parse (char byteRcv, Print & printer) {
 		break;
 
 	case 'm':
-		printer << getChipMemoryStats ();
+		printer << EspBoard::getDeviceMemoryStats ();
 		break;
 
 	case 't':

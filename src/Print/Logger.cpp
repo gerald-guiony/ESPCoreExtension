@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 
-#include "Global.h"
+#include "EspBoard.h"
 #include "Logger.h"
 
 
@@ -106,7 +106,7 @@ size_t Logger :: write (uint8_t character) {
 
 		if (_showChipName) {
 			if (_lineToPrint.length() > 1) _lineToPrint.concat (F(" "));
-			_lineToPrint.concat(getChipName ());
+			_lineToPrint.concat(EspBoard::getDeviceName ());
 		}
 
 		_lineToPrint.concat (F("] "));

@@ -66,76 +66,11 @@ bool ModuleSequencer :: isTimeToEnterDeepSleep () const
 }
 
 //========================================================================================================================
-// ### DEEP-SLEEP ###
-//========================================================================================================================
-void ModuleSequencer :: enterDeepSleep () const
-{
-	Logln ("Enter in deep sleep mode..");
-
-	if (!FileStorage::isFileExists(DEEPSLEEP_NAMEFILE)) {				// Si le fichier deepSleep.txt n'existe pas
-		FileStorage::createFile(DEEPSLEEP_NAMEFILE);					// Creation du fichier deepsleep.txt
-	}
-
-	WiFiHelper::disconnectAll ();
-
-#ifdef ESP8266
-
-	// With ESP.deepSleep(0), esp will be going to sleep forever.
-	ESP.deepSleep(_deepSleepDurationMs * 1000 /* µs */, WAKE_RF_DEFAULT /*WAKE_RF_DISABLED*/);	// WAKE_RF_DISABLED : this prevents the Wifi hardware from booting up after deep sleep
-
-#elif defined (ESP32)
-
-	esp_sleep_enable_timer_wakeup(_deepSleepDurationMs * 1000);
-	esp_deep_sleep_start();
-
-#endif
-																								// Note that there is no way to enable it again without deep sleeping again
-	delay(100);
-}
-
-//========================================================================================================================
 //
 //========================================================================================================================
 void ModuleSequencer :: enterDeepSleepWhenWifiOff ()
 {
 	setConfitionToEnterDeepSleep ([] { return !WiFiHelper::isWifiAvailable(); } );
-}
-
-//========================================================================================================================
-//
-//========================================================================================================================
-bool ModuleSequencer :: isDeviceWakeUpFromDeepSleep () const
-{
-
-#ifdef ESP8266
-
-	rst_info *resetInfo;
-	resetInfo = ESP.getResetInfoPtr();
-
-	if (resetInfo->reason == REASON_DEEP_SLEEP_AWAKE) {
-		if (FileStorage::isFileExists(DEEPSLEEP_NAMEFILE)) {
-			return true;
-		}
-	}
-
-#elif defined (ESP32)
-
-	esp_sleep_wakeup_cause_t wakeup_reason = esp_sleep_get_wakeup_cause();
-
-	if ((wakeup_reason == ESP_SLEEP_WAKEUP_EXT0 ) ||
-		(wakeup_reason == ESP_SLEEP_WAKEUP_EXT1 ) ||
-		(wakeup_reason == ESP_SLEEP_WAKEUP_TIMER ) ||
-		(wakeup_reason == ESP_SLEEP_WAKEUP_TOUCHPAD ) ||
-		(wakeup_reason == ESP_SLEEP_WAKEUP_ULP ))
-	{
-		if (FileStorage::isFileExists(DEEPSLEEP_NAMEFILE)) {
-			return true;
-		}
-	}
-
-#endif
-
-	return false;
 }
 
 //========================================================================================================================
@@ -157,10 +92,6 @@ void ModuleSequencer :: setup (std::list <Module *> modules, SleepMode sleepMode
 	setModules (modules);
 
 	if (WiFiHelper::isWifiAvailable()) {
-
-		if (!_checkCondToEnterDeepSleep ()) {
-			FileStorage::deleteFile (DEEPSLEEP_NAMEFILE);		// Efface le fichier "deepsleep.txt"
-		}
 
 		// *** Modem sleep & light sleep are just effective in station only mode ***
 		if (!WiFiHelper::isAccessPointMode()) {
@@ -227,17 +158,17 @@ void ModuleSequencer :: loop ()
 		if ((millis() - _previousLoopersExecTimeStamp > delayBeforeNextExec) || isWakeUpRequested ()) {
 
 			if (isTimeToEnterDeepSleep ()) {
-				enterDeepSleep();
+				EspBoard::enterDeepSleep(_deepSleepDurationMs);
 			}
 			else {
-				BLINK();
+				EspBoard::blink();
 				_itModule = _modules.begin ();
 			}
 		}
 		// millis takes 49+_days to rollover
 		else if ((millis() < _previousLoopersExecTimeStamp) || _isTimeToReboot) {
 
-			reboot ();
+			EspBoard::reboot ();
 		}
 	}
 }

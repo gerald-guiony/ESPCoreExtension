@@ -8,7 +8,7 @@
 
 #include <Arduino.h>
 
-#include "Global.h"
+#include "EspBoard.h"
 #include "BoardDefs.h"
 
 #include "Print/Logger.h"

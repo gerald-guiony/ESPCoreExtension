@@ -74,8 +74,6 @@ enum class SleepMode {
 
 #define DEEP_SLEEP_DURATION_MS						3600000						// 1h en ms.. with µs, maximum value is 0xFFFFFFFF=4294967295 (32 bits) µs which is about 71 minutes
 
-#define DEEPSLEEP_NAMEFILE							"/deepsleep.txt"
-
 
 //------------------------------------------------------------------------------
 // WARNING : SINGLETON !!!!
@@ -127,8 +125,6 @@ public:
 	void setDeepSleepDuration					(unsigned long deepSleepDurationMs)			{ _deepSleepDurationMs		= deepSleepDurationMs;		}
 	void setConfitionToEnterDeepSleep			(fn_b checkCondToEnterDeepSleep)			{ _checkCondToEnterDeepSleep= checkCondToEnterDeepSleep;}
 	void enterDeepSleepWhenWifiOff				();
-	void enterDeepSleep							() const;
-	bool isDeviceWakeUpFromDeepSleep			() const;
 
 	void setModules 							(std::list <Module *> modules);
 
