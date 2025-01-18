@@ -43,7 +43,7 @@ public:
 	static void blink								();
 	static void blinks								(int nbBlink);
 
-	static void enterDeepSleep						(unsigned long long deepSleepDurationMs);
+	static void enterDeepSleep						(unsigned long long deepSleepTimeMs);
 	static bool isWakeUpFromDeepSleep				();
 
 	static void enablePowerSavingMode				();

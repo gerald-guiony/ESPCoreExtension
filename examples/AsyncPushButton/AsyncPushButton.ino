@@ -7,13 +7,15 @@
 #include <Common.h>
 #include <Switches/PushButton.h>
 
+// -----------------------------------------------------------------------------------------------------------------------
 // Ouput in the Arduino IDE serial monitor :
 //
 // [t:76ms ESP8822001] ******* Chip is (re)booting *******
 // [t:5319ms ESP8822001] Interrupt (ISR) : Button was pressed
 // [t:6158ms ESP8822001] Thread loop : Button was pressed
 //
-// => the message at 5319ms appears instantly with the ISR method when the push button is pressed
+// => With the async notify (ISR), the message appears instantly when the push button is pressed
+// -----------------------------------------------------------------------------------------------------------------------
 
 #define PUSH_BUTTON_PIN		D1
 

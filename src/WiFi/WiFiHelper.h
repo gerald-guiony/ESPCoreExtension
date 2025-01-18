@@ -8,7 +8,7 @@
 
 #include <IPAddress.h>
 
-#define STA_CONNECTION_DELAY				20000
+#define STA_CONNECTION_TIME				20000
 
 
 //------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ public:
 	static IPAddress getIpAddress			();
 	static String getMacAddress				();
 
-	static bool connectToWiFi				(uint16_t delayToConnect = STA_CONNECTION_DELAY);
+	static bool connectToWiFi				(uint16_t delayToConnect = STA_CONNECTION_TIME);
 	static void startWiFiAccessPoint		();
 
 	static void resetWiFiHardware			();

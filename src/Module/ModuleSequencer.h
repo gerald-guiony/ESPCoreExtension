@@ -19,15 +19,15 @@
 #include "Module.h"
 
 
-#define SHORT_DELAY_BETWEEN_EXEC_S					1
-#define LONG_DELAY_BETWEEN_EXEC_S					10
+#define SHORT_TIME_BETWEEN_EXEC_S					1
+#define LONG_TIME_BETWEEN_EXEC_S					10
 
-#define DELAY_BETWEEN_WAKEUP_S						60
+#define TIME_BETWEEN_WAKEUP_S						60
 
 #ifdef ESP8266
-#	define DEEP_SLEEP_DURATION_S					4260	// maximum value is 0xFFFFFFFF=4294967295 (32 bits) µs which is about 71 minutes = 4260s
+#	define DEEP_SLEEP_TIME_S						4260	// maximum value is 0xFFFFFFFF=4294967295 (32 bits) µs which is about 71 minutes = 4260s
 #elif defined (ESP32)
-#	define DEEP_SLEEP_DURATION_S					7200	// = 2h, maximum value is 0xFFFFFFFFFFFFFFFF= (64 bits) µs
+#	define DEEP_SLEEP_TIME_S						7200	// = 2h, maximum value is 0xFFFFFFFFFFFFFFFF= (64 bits) µs
 #endif
 
 //------------------------------------------------------------------------------
@@ -39,19 +39,19 @@ class ModuleSequencer : public Module
 private:
 	using fn_b = std::function <bool()>;
 
-	unsigned long _shortDelayBetweenExecMs		= SHORT_DELAY_BETWEEN_EXEC_S * 1000;
-	unsigned long _longDelayBetweenExecMs		= LONG_DELAY_BETWEEN_EXEC_S * 1000;
-	unsigned long _delayBetweenWakeUpMs			= DELAY_BETWEEN_WAKEUP_S * 1000;
+	unsigned long _shortTimeBetweenExecMs		= SHORT_TIME_BETWEEN_EXEC_S * 1000;
+	unsigned long _longTimeBetweenExecMs		= LONG_TIME_BETWEEN_EXEC_S * 1000;
+	unsigned long _timeBetweenWakeUpMs			= TIME_BETWEEN_WAKEUP_S * 1000;
 
-	unsigned long long _deepSleepDurationMs 	= DEEP_SLEEP_DURATION_S * 1000;
-	fn_b 		  _checkCondToEnterDeepSleep	= [] { return false; };
+	unsigned long long _deepSleepTimeMs 		= DEEP_SLEEP_TIME_S * 1000;
+	fn_b 		  _isTimeToEnterDeepSleep		= [] { return false; };
 
 
-	volatile unsigned long _lastWakeUpTimeStamp	= 0;				// We need to declare a variable as volatile when it can be changed unexpectedly
-																	// (as in an ISR), so the compiler doesn’t remove it due to optimizations
-	unsigned long _previousLoopersExecTimeStamp	= 0;
+	volatile unsigned long _lastWakeUpTimeStamp	= 0;		// We need to declare a variable as volatile when it can be changed unexpectedly
+															// (as in an ISR), so the compiler doesn’t remove it due to optimizations
+	unsigned long _previousModulesExecTimeStamp	= 0;
 
-	bool _isWakeUpDelayOk						= false;
+	bool _isWakeUpTimeOk						= false;
 	bool _isTimeToReboot						= false;
 
 	std::list <Module *> 						_modules;
@@ -60,7 +60,6 @@ private:
 private:
 
 	bool isWakeUpRequested						();
-	bool isTimeToEnterDeepSleep					() const;
 
 public:
 
@@ -71,12 +70,12 @@ public:
 	void requestReboot							();
 	void requestWakeUp		 					();
 
-	void setShortDelayBetweenExecution			(unsigned long shortDelayBetweenExecMs)		{ _shortDelayBetweenExecMs	= shortDelayBetweenExecMs;	}
-	void setLongDelayBetweenExecution			(unsigned long longDelayBetweenExecMs)		{ _longDelayBetweenExecMs	= longDelayBetweenExecMs;	}
-	void setDelayBetweenWakeUp					(unsigned long delayBetweenWakeUpMs)		{ _delayBetweenWakeUpMs		= delayBetweenWakeUpMs;		}
+	void setShortTimeBetweenExecution			(unsigned long shortTimeBetweenExecMs)		{ _shortTimeBetweenExecMs	= shortTimeBetweenExecMs;	}
+	void setLongTimeBetweenExecution			(unsigned long longTimeBetweenExecMs)		{ _longTimeBetweenExecMs	= longTimeBetweenExecMs;	}
+	void setTimeBetweenWakeUp					(unsigned long timeBetweenWakeUpMs)			{ _timeBetweenWakeUpMs		= timeBetweenWakeUpMs;		}
 
-	void setDeepSleepDuration					(unsigned long deepSleepDurationMs)			{ _deepSleepDurationMs		= deepSleepDurationMs;		}
-	void setConditionToEnterDeepSleep			(fn_b checkCondToEnterDeepSleep)			{ _checkCondToEnterDeepSleep= checkCondToEnterDeepSleep;}
+	void setDeepSleepTime						(unsigned long deepSleepTimeMs)				{ _deepSleepTimeMs			= deepSleepTimeMs;			}
+	void setConditionToEnterDeepSleep			(fn_b isTimeToEnterDeepSleep)				{ _isTimeToEnterDeepSleep	= isTimeToEnterDeepSleep;	}
 	void enterDeepSleepWhenWifiOff				();
 
 	void setModules 							(std::list <Module *> modules);

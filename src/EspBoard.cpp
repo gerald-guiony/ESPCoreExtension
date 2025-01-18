@@ -297,7 +297,7 @@ void EspBoard :: blinks (int nbBlink) {
 //========================================================================================================================
 // ### DEEP-SLEEP ###
 //========================================================================================================================
-void EspBoard :: enterDeepSleep (unsigned long long deepSleepDurationMs) {
+void EspBoard :: enterDeepSleep (unsigned long long deepSleepTimeMs) {
 
 	Logln ("Enter in deep sleep mode..");
 
@@ -306,12 +306,12 @@ void EspBoard :: enterDeepSleep (unsigned long long deepSleepDurationMs) {
 #ifdef ESP8266
 
 	// With ESP.deepSleep(0), esp will be going to sleep forever.
-	ESP.deepSleep(uint32_t(1000) * deepSleepDurationMs /* µs */, WAKE_RF_DEFAULT /*WAKE_RF_DISABLED*/);	// WAKE_RF_DISABLED : this prevents the Wifi hardware from booting up after deep sleep
+	ESP.deepSleep(uint32_t(1000) * deepSleepTimeMs /* µs */, WAKE_RF_DEFAULT /*WAKE_RF_DISABLED*/);	// WAKE_RF_DISABLED : this prevents the Wifi hardware from booting up after deep sleep
 
 #elif defined (ESP32)
 
 	epd_poweroff_all();
-	esp_sleep_enable_timer_wakeup(uint64_t(1000) * deepSleepDurationMs);
+	esp_sleep_enable_timer_wakeup(uint64_t(1000) * deepSleepTimeMs);
 	esp_deep_sleep_start();
 
 #endif

@@ -29,8 +29,11 @@ void setup()
 		Logln(F("Wake up from deep sleep mode"));
 	}
 
+	I(ModuleSequencer).setDeepSleepTime(10000);	// 10s
+
 	myPushButton.notifyPressedState += []() {
-		EspBoard::enterDeepSleep(10000); // 10s
+		// Here the condition to enter deep sleep mode becomes true
+		I(ModuleSequencer).setConditionToEnterDeepSleep ([]() { return true; });
 	};
  
 	I(ModuleSequencer).setup ({ &myPushButton });

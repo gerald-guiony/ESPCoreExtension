@@ -46,21 +46,13 @@ void ModuleSequencer :: requestWakeUp ()
 //========================================================================================================================
 bool ModuleSequencer :: isWakeUpRequested ()
 {
-	bool isWakeUpDelayOk = (millis() - _lastWakeUpTimeStamp <= _delayBetweenWakeUpMs);
-	if (isWakeUpDelayOk != _isWakeUpDelayOk) {
-		_isWakeUpDelayOk = isWakeUpDelayOk;
-		notifyWakeUpRequested (isWakeUpDelayOk);
+	bool isWakeUpTimeOk = (millis() - _lastWakeUpTimeStamp <= _timeBetweenWakeUpMs);
+	if (isWakeUpTimeOk != _isWakeUpTimeOk) {
+		_isWakeUpTimeOk = isWakeUpTimeOk;
+		notifyWakeUpRequested (isWakeUpTimeOk);
 		return true;
 	}
 	return false;
-}
-
-//========================================================================================================================
-//
-//========================================================================================================================
-bool ModuleSequencer :: isTimeToEnterDeepSleep () const
-{
-	return _checkCondToEnterDeepSleep ();
 }
 
 //========================================================================================================================
@@ -86,10 +78,8 @@ void ModuleSequencer :: setModules (std::list <Module *> modules)
 void ModuleSequencer :: setup (std::list <Module *> modules)
 {
 	setModules (modules);
-
 	requestWakeUp ();
-
-	_previousLoopersExecTimeStamp = millis ();
+	_previousModulesExecTimeStamp = millis ();
 }
 
 //========================================================================================================================
@@ -112,17 +102,17 @@ void ModuleSequencer :: loop ()
 		_itModule++;
 
 		if (_itModule == _modules.end ()) {
-			_previousLoopersExecTimeStamp = millis ();
+			_previousModulesExecTimeStamp = millis ();
 		}
 	}
 	else {
 
-		unsigned long delayBeforeNextExec = _isWakeUpDelayOk ? _shortDelayBetweenExecMs : _longDelayBetweenExecMs;
+		unsigned long timeBeforeNextExec = _isWakeUpTimeOk ? _shortTimeBetweenExecMs : _longTimeBetweenExecMs;
 
-		if ((millis() - _previousLoopersExecTimeStamp > delayBeforeNextExec) || isWakeUpRequested ()) {
+		if ((millis() - _previousModulesExecTimeStamp > timeBeforeNextExec) || isWakeUpRequested ()) {
 
-			if (isTimeToEnterDeepSleep ()) {
-				EspBoard::enterDeepSleep(_deepSleepDurationMs);
+			if (_isTimeToEnterDeepSleep ()) {
+				EspBoard::enterDeepSleep(_deepSleepTimeMs);
 			}
 			else {
 				EspBoard::blink();
@@ -130,7 +120,7 @@ void ModuleSequencer :: loop ()
 			}
 		}
 		// millis takes 49+_days to rollover
-		else if ((millis() < _previousLoopersExecTimeStamp) || _isTimeToReboot) {
+		else if ((millis() < _previousModulesExecTimeStamp) || _isTimeToReboot) {
 			EspBoard::reboot ();
 		}
 	}
