@@ -18,6 +18,12 @@
 //------------------------------------------------------------------------------
 class EspBoard final
 {
+private:
+	static void enablePowerSavingMode				(bool enable);
+	// Very risky !
+	static void enableHardwareWatchdog				(bool enable);
+	static void enableSoftwareWatchdog				(bool enable);
+
 public:
 
 	~EspBoard() = delete;	// you can not create an instance of such a class
@@ -46,12 +52,14 @@ public:
 	static void enterDeepSleep						(unsigned long long deepSleepTimeMs);
 	static bool isWakeUpFromDeepSleep				();
 
-	static void enablePowerSavingMode				();
-	static void disablePowerSavingMode				();
+	static void enablePowerSavingMode				() {enablePowerSavingMode(true);}
+	static void disablePowerSavingMode				() {enablePowerSavingMode(false);}
 
-	// Very risky !
-	static void disableHardwareWatchdog				();
-	static void enableHardwareWatchdog				();
+	static void enableHardwareWatchdog				() {enableHardwareWatchdog(true);}
+	static void disableHardwareWatchdog				() {enableHardwareWatchdog(false);}	// Very risky !
+
+	static void enableSoftwareWatchdog				() {enableSoftwareWatchdog(true);};
+	static void disableSoftwareWatchdog				() {enableSoftwareWatchdog(false);}; // Very risky !
 };
 
 

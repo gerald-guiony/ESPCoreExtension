@@ -4,16 +4,7 @@
 // Author Gerald Guiony
 //************************************************************************************************************************
 
-#ifdef ESP8266
-#	include  <ESP8266WiFi.h>
-	extern "C" {
-		#include "user_interface.h"
-	}
-#elif defined(ESP32)
-#	include <WiFi.h>
-#	include <esp_wifi.h>
-#endif
-
+#include <Arduino.h>
 
 #include "EspBoard.h"
 #include "Print/Logger.h"

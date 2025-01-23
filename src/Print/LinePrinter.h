@@ -53,10 +53,10 @@ public:
 //========================================================================================================================
 template <typename IntType>
 String n2hexstr (IntType w, size_t hex_len = sizeof(IntType)<<1) {
-    static const char* digits = "0123456789ABCDEF";
-    String rc;
+	static const char* digits = "0123456789ABCDEF";
+	String rc;
 	rc.reserve (hex_len);
 	for (size_t i=0, j=(hex_len-1)*4 ; i<hex_len; ++i,j-=4)
-        rc += digits [ (w>>j) & 0x0F ];
-    return rc;
+		rc += digits [ (w>>j) & 0x0F ];
+	return rc;
 }

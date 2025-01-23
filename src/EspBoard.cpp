@@ -8,7 +8,10 @@
 #include <HardwareSerial.h>
 
 #ifdef ESP32
+#	include <esp_system.h>
 #	include <esp_task_wdt.h>
+#	include <esp_err.h>
+#	include <esp_wifi.h>
 #	include <rom/rtc.h>
 #endif
 
@@ -310,7 +313,6 @@ void EspBoard :: enterDeepSleep (unsigned long long deepSleepTimeMs) {
 
 #elif defined (ESP32)
 
-	epd_poweroff_all();
 	esp_sleep_enable_timer_wakeup(uint64_t(1000) * deepSleepTimeMs);
 	esp_deep_sleep_start();
 
@@ -387,15 +389,15 @@ bool EspBoard :: isWakeUpFromDeepSleep () {
 // consumption is far less than 1 mA. The current consumption of 20 μA was obtained at the voltage of 2.5V
 // GPIO16; used for Deep-sleep wake-up when connected to RST pin.
 //========================================================================================================================
-void EspBoard :: enablePowerSavingMode () {
+void EspBoard :: enablePowerSavingMode (bool enable) {
 
 	// *** Modem sleep & light sleep are just effective in station only mode ***
 	if (WiFiHelper::isWifiAvailable() && !WiFiHelper::isAccessPointMode()) {
 
 #ifdef ESP8266
 
-		// Auto Light-sleep
-		wifi_set_sleep_type(LIGHT_SLEEP_T);	// Just enable the function and let the system decide when it can sleep
+		// Auto Light-sleep or Default mode
+		wifi_set_sleep_type(enable ? LIGHT_SLEEP_T : MODEM_SLEEP_T);	// Just enable the function and let the system decide when it can sleep
 
 		// WARNING !!
 		// During Light-sleep, the CPU is suspended and will not respond to the signals and interrupts
@@ -417,70 +419,61 @@ void EspBoard :: enablePowerSavingMode () {
 
 		// Maximum modem power saving. In this mode, interval to receive beacons is determined by the listen_interval
 		// parameter in wifi_sta_config_t
-		esp_wifi_set_ps (WIFI_PS_MAX_MODEM);
+		// Minimum modem power saving. In this mode, station wakes up to receive beacon every DTIM period
+		esp_wifi_set_ps (enable ? WIFI_PS_MAX_MODEM : WIFI_PS_MIN_MODEM);
 
 		// Another critical feature to reduce power consumption is cutting the CPU frequencies
 		// if code using wifi or bt/ble, 80MHz is minimum you can go
-		setCpuFrequencyMhz(/* The only value admitted : 240, 160, 80, 40, 20, 10 */ 80);
+		setCpuFrequencyMhz(/* The only value admitted : 240, 160, 80, 40, 20, 10 */ enable ? 80 : 240);
 	}
 	else if (!WiFiHelper::isWifiAvailable()) {
 		// if code using wifi or bt/ble, 80MHz is minimum you can go
-		setCpuFrequencyMhz(/* The only value admitted : 240, 160, 80, 40, 20, 10 */ 10);
+		setCpuFrequencyMhz(/* The only value admitted : 240, 160, 80, 40, 20, 10 */ enable ? 10 : 240);
 #endif
 	}
 }
 
 //========================================================================================================================
-//
+// Very risky to disable hardware watchdog!
 //========================================================================================================================
-void EspBoard :: disablePowerSavingMode () {
-
-	// *** Modem sleep & light sleep are just effective in station only mode ***
-	if (WiFiHelper::isWifiAvailable() && !WiFiHelper::isAccessPointMode()) {
-
+void EspBoard :: enableHardwareWatchdog (bool enable) {
 #ifdef ESP8266
-
-		// Default mode
-		// Modem-sleep, the system can be woken up automatically. Users don’t need to configure the interface
-		wifi_set_sleep_type(MODEM_SLEEP_T);
-
+	// ESP8266 and ESP32 have 2 watchdogs, one implemented in hardware and another in software
+	if (enable) {
+		*((volatile uint32_t*) 0x60000900) |= 1; // Hardware WDT ON
+	}
+	else {
+		*((volatile uint32_t*) 0x60000900) &= ~(1); // Hardware WDT OFF
+	}
 #elif defined (ESP32)
 
-		// https://mischianti.org/esp32-practical-power-saving-manage-wifi-and-cpu-1/
+	// @todo
 
-		// WIFI_PS_NONE: disable modem sleep entirely;
-		// WIFI_PS_MIN_MODEM: enable Modem-sleep minimum power save mode;
-		// WIFI_PS_MAX_MODEM: to enable Modem-sleep maximum power save mode.
-
-		// WiFi.setSleep(false); // the power consumption changes dramaticalyl, we have set WIFI_PS_NONE
-		// WiFi.setSleep(true); // defult parameter, so we set WIFI_PS_MIN_MODEM
-
-		// Minimum modem power saving. In this mode, station wakes up to receive beacon every DTIM period
-		esp_wifi_set_ps (WIFI_PS_MIN_MODEM);
 #endif
+}
+
+//========================================================================================================================
+// Very risky to disable software watchdog!
+//========================================================================================================================
+void EspBoard :: enableSoftwareWatchdog (bool enable) {
+#ifdef ESP8266
+	if (enable) {
+		ESP.wdtEnable(5000);
 	}
-
-#ifdef ESP32
-	// Another critical feature to reduce power consumption is cutting the CPU frequencies
-	// if code using wifi or bt/ble, 80MHz is minimum you can go
-	setCpuFrequencyMhz(/* The only value admitted : 240, 160, 80, 40, 20, 10 */ 240);
-#endif
-}
-
-//========================================================================================================================
-// Very risky !
-//========================================================================================================================
-void EspBoard :: disableHardwareWatchdog () {
-#ifdef ESP8266
-	*((volatile uint32_t*) 0x60000900) &= ~(1); // Hardware WDT OFF
-#endif
-}
-
-//========================================================================================================================
-//
-//========================================================================================================================
-void EspBoard :: enableHardwareWatchdog () {
-#ifdef ESP8266
-	*((volatile uint32_t*) 0x60000900) |= 1; // Hardware WDT ON
+	else {
+		ESP.wdtDisable();	// disable the software watchdog
+	}
+#elif defined (ESP32)
+	// This will set the watchdog timeout to 5s and enable the controller reset if it’s triggered (reboot) or
+	// This will set the watchdog timeout to 30s and disable the controller reset if it’s triggered
+	esp_task_wdt_config_t wdt_config = {(uint32_t)(enable ? 5000 : 30000), enable};
+	if (esp_task_wdt_init(&wdt_config) == ESP_OK) {
+		Logln("Watchdog controller reset " << (enable ? "enabled" : "disabled") << " successfully !");
+		// Add the current task to the Watchdog
+		esp_task_wdt_add(NULL); // NULL = tâche actuelle
+	}
+	else {
+		Logln("Error during Watchdog initialization!");
+	}
 #endif
 }

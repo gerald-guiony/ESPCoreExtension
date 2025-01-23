@@ -159,7 +159,7 @@ void WiFiHelper :: WiFiOn () {
 	WiFi.forceSleepWake();
 #endif
 
-    WiFi.disconnect(false);  						// Reconnect the network
+	WiFi.disconnect(false);  						// Reconnect the network
 
 	delay(1);
 }
