@@ -30,9 +30,12 @@
 #	define DEEP_SLEEP_TIME_S						7200	// = 2h, maximum value is 0xFFFFFFFFFFFFFFFF= (64 bits) µs
 #endif
 
+
+namespace corex {
+
 //------------------------------------------------------------------------------
 // WARNING : SINGLETON !!!!
-class ModuleSequencer : public Module
+class ModuleSequencer : public Module <std::list <IModule *>>
 {
 	SINGLETON_CLASS(ModuleSequencer)
 
@@ -54,12 +57,13 @@ private:
 	bool _isWakeUpTimeOk						= false;
 	bool _isTimeToReboot						= false;
 
-	std::list <Module *> 						_modules;
-	std::list <Module *> :: iterator 			_itModule;
+	std::list <IModule *> 						_modules;
+	std::list <IModule *> :: iterator 			_itModule;
 
 private:
 
 	bool isWakeUpRequested						();
+	void setModules 							(std::list <IModule *> modules);
 
 public:
 
@@ -78,13 +82,11 @@ public:
 	void setConditionToEnterDeepSleep			(fn_b isTimeToEnterDeepSleep)				{ _isTimeToEnterDeepSleep	= isTimeToEnterDeepSleep;	}
 	void enterDeepSleepWhenWifiOff				();
 
-	void setModules 							(std::list <Module *> modules);
-
-	void setup									(std::list <Module *> modules);
+	void setup									(std::list <IModule *> modules) override;
 	void loop									() override;
 };
 
-
+}
 
 
 

@@ -14,6 +14,8 @@
 #define BUF_MAX_LEN			100
 
 
+namespace corex {
+
 //------------------------------------------------------------------------------
 //
 class MemStream : public Stream
@@ -62,3 +64,4 @@ public:
 
 };
 
+}

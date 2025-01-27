@@ -10,6 +10,8 @@
 
 #include "Tools/Signal.h"
 
+namespace corex {
+
 //------------------------------------------------------------------------------
 //
 class LoggerCommandParser
@@ -23,3 +25,5 @@ public:
 
 	virtual bool parse						(char byteRcv, Print & printer);
 };
+
+}

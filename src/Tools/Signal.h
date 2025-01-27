@@ -12,11 +12,14 @@
 #include <map>
 
 
+namespace corex {
+
 using namespace std::placeholders;
 using FunctionId = size_t;
 
 template <typename ...Args>
-class Signal {
+class Signal
+{
 protected:
 	using fn_t = std::function <void(Args ...args)>;
 	// std::shared_ptr<std::recursive_mutex> _m; 			 =========> Useless mutex (No thread)
@@ -45,3 +48,5 @@ public:
 																}
 															}
 };
+
+}

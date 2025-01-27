@@ -7,11 +7,11 @@
 #include <Common.h>
 #include <Switches/PushButton.h>
 
+using namespace corex;
 
 // WARNING : GPIO16 needs to be tied to RST pin to wake from deepSleep (On the NodeMCU, GPIO 16 is represented as D0)
 
 #define PUSH_BUTTON_PIN D1
-
 PushButton myPushButton (PUSH_BUTTON_PIN);
 
 //========================================================================================================================
@@ -32,7 +32,7 @@ void setup()
 	I(ModuleSequencer).setDeepSleepTime(10000);	// 10s
 
 	myPushButton.notifyPressedState += []() {
-		// Here the condition to enter deep sleep mode becomes true
+		// When the button is pressed, deep sleep is allowed
 		I(ModuleSequencer).setConditionToEnterDeepSleep ([]() { return true; });
 	};
  

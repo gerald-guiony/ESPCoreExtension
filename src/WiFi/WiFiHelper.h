@@ -11,6 +11,8 @@
 #define STA_CONNECTION_TIME				20000
 
 
+namespace corex {
+
 //------------------------------------------------------------------------------
 // WARNING : SINGLETON !!!!
 class WiFiHelper
@@ -20,6 +22,8 @@ public:
 
 	static bool isWifiAvailable				();
 	static bool isAccessPointMode			();
+	static bool isStationModeActive			();
+
 	static IPAddress getIpAddress			();
 	static String getMacAddress				();
 
@@ -33,3 +37,5 @@ public:
 	static void WiFiOff						();
 
 };
+
+}

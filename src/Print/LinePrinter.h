@@ -24,6 +24,8 @@ template<class T> inline Print & operator <<(Print & printer, T arg) { printer.p
 #define BUFFER_PRINT_LEN				200
 
 
+namespace corex {
+
 //------------------------------------------------------------------------------
 //
 class LinePrinter : public Print
@@ -59,4 +61,6 @@ String n2hexstr (IntType w, size_t hex_len = sizeof(IntType)<<1) {
 	for (size_t i=0, j=(hex_len-1)*4 ; i<hex_len; ++i,j-=4)
 		rc += digits [ (w>>j) & 0x0F ];
 	return rc;
+}
+
 }

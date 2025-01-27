@@ -1,5 +1,5 @@
 //************************************************************************************************************************
-// PushButton.h
+// AqyncPushButton.h
 // Version 2.0 Jan, 2025
 // Author Gerald Guiony
 //************************************************************************************************************************
@@ -11,16 +11,16 @@
 #include <FunctionalInterrupt.h>
 
 #include "Common.h"
-
+#include "Module/AsyncModule.h"
 
 
 namespace corex {
 
-class PushButton : public Module <uint8_t>
+class AsyncPushButton : public AsyncModule <uint8_t>
 {
 public:
 
-	PushButton (uint8_t pin) { setup (pin); }
+	AsyncPushButton (uint8_t pin) { setup (pin); }
 
 	/* Interrupts may be attached in all the GPIOs of the ESP8266, except for the GPIO16 [3]											*/
 	virtual void setup (uint8_t pin) override
@@ -38,31 +38,12 @@ public:
 		pinMode (pin, ((pin == USER_BTN) || (pin == BLINKLED)) ? INPUT : INPUT_PULLUP);
 
 		/* to trigger when the pin goes from high to low */
-		attachInterrupt (digitalPinToInterrupt(pin),
-						[this]() {
-							if (!_pressedState) {
-								_pressedState = true;
-							}
-						},
-						FALLING);
-	}
-
-	void loop () override
-	{
-		if (_pressedState) {
-			notifyPressedState ();
-			_pressedState = false;
-		}
+		attachInterrupt (digitalPinToInterrupt(pin), [this]() {	notifyPressedState(); }, FALLING);
 	}
 
 public:
-	Signal <> notifyPressedState;
+	Signal <> notifyPressedState;		// WARNµING : You can not use yield or delay or any function that uses them inside the ISR callbacks
 
-protected:
-	/* We need to declare a variable as volatile when it can be changed unexpectedly (as in an ISR), so the compiler doesn’t remove		*/
-	/* it due to optimizations																											*/
-	/* https://barrgroup.com/Embedded-Systems/How-To/C-Volatile-Keyword																	*/
-	volatile bool _pressedState		= false;
 };
 
 }

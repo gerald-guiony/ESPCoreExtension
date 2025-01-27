@@ -4,12 +4,12 @@
 // Author Gerald Guiony
 //************************************************************************************************************************
 
-#if defined (ESP8266) || defined (ESP32)
-
 #include "Print/Logger.h"
 #include "Storage/FileStorage.h"
 
 #include "MemStream.h"
+
+namespace corex {
 
 //========================================================================================================================
 //
@@ -202,6 +202,5 @@ int MemStream::available () {
 	return ret;
 }
 
-
-#endif
+}
 

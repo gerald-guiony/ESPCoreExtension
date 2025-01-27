@@ -4,8 +4,6 @@
 // Author Gerald Guiony
 //************************************************************************************************************************
 
-#if defined (ESP8266) || defined (ESP32)
-
 #include <Arduino.h>
 #include <Stream.h>
 #include <StreamString.h>
@@ -13,6 +11,7 @@
 #include "Print/Logger.h"
 #include "FileStorage.h"
 
+namespace corex {
 
 //========================================================================================================================
 //
@@ -337,5 +336,4 @@ void FileStorage :: deleteFile (File & file)
 	deleteFile (filename.c_str());
 }
 
-
-#endif
+}

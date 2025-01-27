@@ -7,8 +7,9 @@
 #include <Common.h>
 #include <Switches/PushButton.h>
 
-#define PUSH_BUTTON_PIN		D1
+using namespace corex;
 
+#define PUSH_BUTTON_PIN	 D1
 PushButton myPushButton (PUSH_BUTTON_PIN);
 
 //========================================================================================================================

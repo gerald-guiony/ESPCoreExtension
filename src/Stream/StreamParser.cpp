@@ -8,6 +8,7 @@
 
 #include "StreamParser.h"
 
+namespace corex {
 
 //========================================================================================================================
 //
@@ -50,4 +51,6 @@ uint8_t StreamParser :: hexstr2Int (Stream & stream) {
 	uint8_t ones = (hexValue[1] <= '9') ? hexValue[1] - '0' : hexValue[1] - '7';
 
 	return (16 * tens) + ones;
+}
+
 }

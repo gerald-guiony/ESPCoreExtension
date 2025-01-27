@@ -43,6 +43,8 @@
 #	warning ** WT32_ETH01 defined **
 #endif
 
+namespace corex {
+
 //========================================================================================================================
 //
 //========================================================================================================================
@@ -392,7 +394,7 @@ bool EspBoard :: isWakeUpFromDeepSleep () {
 void EspBoard :: enablePowerSavingMode (bool enable) {
 
 	// *** Modem sleep & light sleep are just effective in station only mode ***
-	if (WiFiHelper::isWifiAvailable() && !WiFiHelper::isAccessPointMode()) {
+	if (WiFiHelper::isStationModeActive()) {
 
 #ifdef ESP8266
 
@@ -476,4 +478,6 @@ void EspBoard :: enableSoftwareWatchdog (bool enable) {
 		Logln("Error during Watchdog initialization!");
 	}
 #endif
+}
+
 }

@@ -9,6 +9,8 @@
 
 #include <Arduino.h>
 
+
+namespace corex {
 /*
 * noInterrupts() is the safe and only way to synchronize with the interrupt method
 * \Author GGU
@@ -27,3 +29,5 @@ public :
 											// tasks to happen in the background and are enabled by default.
 	}
 };
+
+}

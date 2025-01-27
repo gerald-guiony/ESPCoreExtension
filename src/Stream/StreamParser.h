@@ -8,6 +8,7 @@
 
 #include <Stream.h>
 
+namespace corex {
 //------------------------------------------------------------------------------
 //
 class StreamParser
@@ -19,7 +20,7 @@ public:
 
 	virtual bool parse					(Stream & stream, Print & printer) = 0;
 };
-
+}
 
 
 

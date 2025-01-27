@@ -5,42 +5,32 @@
 //************************************************************************************************************************
 
 #include <Common.h>
-#include <Switches/PushButton.h>
+#include <Switches/AsyncPushButton.h>
+
+using namespace corex;
 
 // -----------------------------------------------------------------------------------------------------------------------
 // Ouput in the Arduino IDE serial monitor :
 //
 // [t:76ms ESP8822001] ******* Chip is (re)booting *******
 // [t:5319ms ESP8822001] Interrupt (ISR) : Button was pressed
-// [t:6158ms ESP8822001] Thread loop : Button was pressed
 //
-// => With the async notify (ISR), the message appears instantly when the push button is pressed
+// => this message appears instantly when the push button is pressed
 // -----------------------------------------------------------------------------------------------------------------------
 
-#define PUSH_BUTTON_PIN		D1
-
-PushButton myPushButton (PUSH_BUTTON_PIN);
+#define PUSH_BUTTON_PIN	D1
+AsyncPushButton myAsyncPushButton (PUSH_BUTTON_PIN);
 
 //========================================================================================================================
 //
 //========================================================================================================================
 void setup()
 {
-	// ------------ Global Init
-
 	EspBoard::init (true);
 
-	// ------------- Setup
-
-	myPushButton.notifyPressedState += []() {
-		Logln (F("Thread loop : Button was pressed"));
-	};
-
-	myPushButton.notifyPressedStateAsync += []() {
+	myAsyncPushButton.notifyPressedState += []() {
 		Logln (F("Interrupt (ISR) : Button was pressed"));
 	};
-
-	I(ModuleSequencer).setup ({ &myPushButton });
 }
 
 //========================================================================================================================
@@ -48,5 +38,4 @@ void setup()
 //========================================================================================================================
 void loop()
 {
-	I(ModuleSequencer).loop ();
 }

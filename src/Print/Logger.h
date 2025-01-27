@@ -12,31 +12,8 @@
 // Define DEBUG for lots of lovely debug output :)
 #define DEBUG
 
-
-//------------------------------------------------------------------------------
-// Debug directives
-//
-#ifdef DEBUG
-#	if defined (ESP8266) || defined (ESP32)
-#		define LOGGER	I(Logger)
-#	else
-#		define LOGGER	Serial
-#	endif
-#	define Log(s)	(LOGGER << s)
-#	define Logln(s) (LOGGER << s << LN)
-#else
-#	define Log(s)
-#	define Logln(s)
-#endif
-
-
-
-
-#if defined (ESP8266) || defined (ESP32)
-
 #include "Tools/Singleton.h"
 #include "LinePrinter.h"
-
 
 //------------------------------------------------------------------------------
 // ANSI Colors
@@ -70,6 +47,24 @@
 #define COLOR_BACKGROUND_WHITE			"\x1B[47m"
 
 
+//------------------------------------------------------------------------------
+// Debug directives
+//
+#ifdef DEBUG
+#	if defined (ESP8266) || defined (ESP32)
+#		define LOGGER	I(corex::Logger)
+#	else
+#		define LOGGER	Serial
+#	endif
+#	define Log(s)	(LOGGER << s)
+#	define Logln(s) (LOGGER << s << LN)
+#else
+#	define Log(s)
+#	define Logln(s)
+#endif
+
+
+namespace corex {
 
 //------------------------------------------------------------------------------
 // WARNING : SINGLETON !!!!
@@ -98,4 +93,4 @@ public:
 };
 
 
-#endif
+}

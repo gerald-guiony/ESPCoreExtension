@@ -119,26 +119,26 @@
 // Input pins
 //# define IO01	 		1 							// reserved for TX0 - used for first upload
 //# define IO03	 		3 							// reserved for RX0 - used for first upload
-# define IO00	   		0 							// needed to bring ESP into flash mode
-# define I39			39							// input only
-# define I36			36							// input only
-# define IO15	   		15
-# define IO14	   		14
-# define IO12	   		12
-# define I35			35							// input only
+#	define IO00	   		0 							// needed to bring ESP into flash mode
+#	define I39			39							// input only
+#	define I36			36							// input only
+#	define IO15	   		15
+#	define IO14	   		14
+#	define IO12	   		12
+#	define I35			35							// input only
 
 // Ouput pins
 // Pins, which can be switched on or off
-# define IO32	   		32
-# define IO33	   		33
-# define IO17_LED   	17							// TX2; green LED (LOW active)
-# define IO05_LED   	5				 			// RX2; green LED (LOW active)
+#	define IO32	   		32
+#	define IO33	   		33
+#	define IO17_LED   	17							// TX2; green LED (LOW active)
+#	define IO05_LED   	5				 			// RX2; green LED (LOW active)
 
 // PWM pins
 // Pins, which can be dimmed
 // the ESP32 can use a maximum of 16 pins for PWM
-# define IO4			4				 			// current PWM level = 1023
-# define IO2			2				 			// current PWM level = 511
+#	define IO4			4				 			// current PWM level = 1023
+#	define IO2			2				 			// current PWM level = 511
 
 #	define FLASH_BTN	IO00
 #	define BLINKLED		IO05_LED

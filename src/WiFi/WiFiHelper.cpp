@@ -17,12 +17,16 @@
 
 #include "WiFiHelper.h"
 
+
+
+namespace corex {
+
 //========================================================================================================================
 //
 //========================================================================================================================
 bool WiFiHelper :: isWifiAvailable () {
 	// Access Point mode (server wifi) ou Station mode (client wifi)
-	return (isAccessPointMode () || (WiFi.status() == WL_CONNECTED) /* assigned when connected to a WiFi network */);
+	return (isAccessPointMode () || isStationModeActive());
 }
 
 //========================================================================================================================
@@ -30,6 +34,13 @@ bool WiFiHelper :: isWifiAvailable () {
 //========================================================================================================================
 bool WiFiHelper :: isAccessPointMode () {
 	return (WiFi.getMode() == WIFI_AP);
+}
+
+//========================================================================================================================
+//
+//========================================================================================================================
+bool WiFiHelper :: isStationModeActive () {
+	return ((WiFi.getMode() == WIFI_STA) && (WiFi.status() == WL_CONNECTED) /* assigned when connected to a WiFi network */);
 }
 
 //========================================================================================================================
@@ -180,4 +191,6 @@ void WiFiHelper :: WiFiOff () {
 
 	// WAKE_RF_DISABLED to keep the WiFi radio disabled when we wake up
 //	ESP.deepSleep( SLEEPTIME, WAKE_RF_DISABLED );
+}
+
 }

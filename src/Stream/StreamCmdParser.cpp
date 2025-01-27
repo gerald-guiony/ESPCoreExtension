@@ -8,6 +8,7 @@
 
 #include "StreamCmdParser.h"
 
+namespace corex {
 
 //========================================================================================================================
 //
@@ -191,3 +192,4 @@ String StreamRespParser :: getRespParam (Stream & stream) {
 	return ret;
 }
 
+}

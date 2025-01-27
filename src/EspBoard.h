@@ -13,6 +13,8 @@
 #	error Platform not supported
 #endif
 
+namespace corex {
+
 //------------------------------------------------------------------------------
 // Static Class
 //------------------------------------------------------------------------------
@@ -62,4 +64,4 @@ public:
 	static void disableSoftwareWatchdog				() {enableSoftwareWatchdog(false);}; // Very risky !
 };
 
-
+}

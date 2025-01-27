@@ -6,12 +6,11 @@
 
 #pragma once
 
-
 #include <Arduino.h>
 
 #include "EspBoard.h"
 
-
+namespace corex {
 
 /**
  * GroveRelay Description example:
@@ -42,3 +41,5 @@ public:
 													EspBoard::setPortPower (true);
 													digitalWrite (_pin, HIGH );			}
 };
+
+}

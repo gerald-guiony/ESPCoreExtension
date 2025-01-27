@@ -1,6 +1,6 @@
 //************************************************************************************************************************
-// Module.h
-// Version 2.0 Jan, 2025
+// AsyncModule.h
+// Version 1.0 Jan, 2025
 // Author Gerald Guiony
 //************************************************************************************************************************
 
@@ -8,15 +8,14 @@
 
 namespace corex {
 
-class IModule
+class IAsyncModule
 {
 public:
-    virtual ~IModule() = default;
-	virtual void loop () = 0;
+    virtual ~IAsyncModule() = default;
 };
 
 template <typename ...Args>
-class Module  : public IModule
+class AsyncModule : public IAsyncModule
 {
 public:
 	virtual void setup (Args ...args) = 0;

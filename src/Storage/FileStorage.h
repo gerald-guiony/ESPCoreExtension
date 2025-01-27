@@ -18,6 +18,9 @@
 #define TMP_NAMEFILE_PREFIX						"/tmp"
 #define TMP_NAMEFILE_SUFFIX						".dat"
 
+
+namespace corex {
+
 //------------------------------------------------------------------------------
 //
 class FileStorage
@@ -48,8 +51,7 @@ public:
 	static File createTmpFile						();
 };
 
-
-
+}
 
 
 

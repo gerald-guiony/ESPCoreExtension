@@ -33,6 +33,9 @@
 #define PRINT_ERROR(id)				PRINT_RESP(id,F(MSG_ERROR))
 #define PRINT_PARSE_FAILS(id)		F("ERROR: Invalid message or format") << LN << PRINT_ERROR(id)
 
+
+namespace corex {
+
 //------------------------------------------------------------------------------
 //
 class StreamCmdParser : public StreamParser
@@ -62,6 +65,7 @@ protected:
 	String getRespParam				(Stream & stream);
 };
 
+}
 
 
 

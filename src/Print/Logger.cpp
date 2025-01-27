@@ -10,6 +10,8 @@
 #include "Logger.h"
 
 
+namespace corex {
+
 
 SINGLETON_IMPL (Logger)
 
@@ -135,4 +137,6 @@ String Logger::formatNumber(uint32_t value, uint8_t size, char insert) {
 
 	ret.concat(value);
 	return ret;
+}
+
 }
