@@ -77,6 +77,7 @@ void EspBoard :: init (bool enableDebugSerial /*= false */) {
 
 #endif
 
+
 #ifdef BLINKLED
 	pinMode (BLINKLED, OUTPUT);							// Set led pin as output
 #endif
@@ -167,7 +168,7 @@ void EspBoard :: asyncDelayMillis (unsigned int ms) {
 	ESP.wdtFeed();							// Explicitly restart the software watchdog
 //	yield();
 #elif defined (ESP32)
-	esp_task_wdt_reset();
+	yield();
 #endif
 
 	unsigned int loop = 0;
@@ -182,7 +183,7 @@ void EspBoard :: asyncDelayMillis (unsigned int ms) {
 			ESP.wdtFeed();					// Every 163 ms, the ESP wdt is fed and the cpu is yielded for any pending tasks.
 //			yield();						// This should eliminate watchdog timer soft resets
 #elif defined (ESP32)
-			esp_task_wdt_reset();
+			yield();
 #endif
 		}
 	}

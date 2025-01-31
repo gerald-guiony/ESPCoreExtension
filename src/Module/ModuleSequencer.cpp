@@ -22,7 +22,7 @@ SINGLETON_IMPL (ModuleSequencer)
 //========================================================================================================================
 //
 //========================================================================================================================
-void ModuleSequencer ::requestReboot ()
+void ModuleSequencer :: requestReboot ()
 {
 	_isTimeToReboot = true;
 }
@@ -60,16 +60,16 @@ void ModuleSequencer :: enterDeepSleepWhenWifiOff ()
 //========================================================================================================================
 //
 //========================================================================================================================
-void ModuleSequencer :: setModules (std::list <IModule *> modules)
+void ModuleSequencer :: setModules (const std::list <IModule *> & modules)
 {
-	_modules.assign(modules.begin(), modules.end());
+	_modules = modules;
 	_itModule = _modules.end();
 }
 
 //========================================================================================================================
 //
 //========================================================================================================================
-void ModuleSequencer :: setup (std::list <IModule *> modules)
+void ModuleSequencer :: setup (const std::list <IModule *> & modules)
 {
 	setModules (modules);
 	requestWakeUp ();

@@ -35,7 +35,7 @@ namespace corex {
 
 //------------------------------------------------------------------------------
 // WARNING : SINGLETON !!!!
-class ModuleSequencer : public Module <std::list <IModule *>>
+class ModuleSequencer : public Module <const std::list <IModule *> &>
 {
 	SINGLETON_CLASS(ModuleSequencer)
 
@@ -63,7 +63,7 @@ private:
 private:
 
 	bool isWakeUpRequested						();
-	void setModules 							(std::list <IModule *> modules);
+	void setModules 							(const std::list <IModule *> & modules);
 
 public:
 
@@ -82,7 +82,7 @@ public:
 	void setConditionToEnterDeepSleep			(fn_b isTimeToEnterDeepSleep)				{ _isTimeToEnterDeepSleep	= isTimeToEnterDeepSleep;	}
 	void enterDeepSleepWhenWifiOff				();
 
-	void setup									(std::list <IModule *> modules) override;
+	void setup									(const std::list <IModule *> & modules) override;
 	void loop									() override;
 };
 

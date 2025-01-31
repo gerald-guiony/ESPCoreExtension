@@ -33,11 +33,11 @@ public:
 	BasicRelay		(uint8_t pin) : _pin(pin)	{	pinMode (_pin, OUTPUT);
 													open ();							}
 
-	void open		()							{ 	digitalWrite (_pin, LOW);
+	void open		()	const					{ 	digitalWrite (_pin, LOW);
 													// Power OFF the Grove sockets
 													EspBoard::setPortPower (false);		}
 
-	void close		()							{ 	// Power ON the Grove sockets
+	void close		()	const					{ 	// Power ON the Grove sockets
 													EspBoard::setPortPower (true);
 													digitalWrite (_pin, HIGH );			}
 };
