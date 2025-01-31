@@ -60,7 +60,7 @@ void ModuleSequencer :: enterDeepSleepWhenWifiOff ()
 //========================================================================================================================
 //
 //========================================================================================================================
-void ModuleSequencer :: setModules (std::list <IModule *> modules)
+void ModuleSequencer :: setModules (const std::list <IModule *> & modules)
 {
 	_modules.assign(modules.begin(), modules.end());
 	_itModule = _modules.end();
@@ -69,7 +69,7 @@ void ModuleSequencer :: setModules (std::list <IModule *> modules)
 //========================================================================================================================
 //
 //========================================================================================================================
-void ModuleSequencer :: setup (std::list <IModule *> modules)
+void ModuleSequencer :: setup (const std::list <IModule *> & modules)
 {
 	setModules (modules);
 	requestWakeUp ();
