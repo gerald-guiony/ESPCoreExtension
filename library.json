@@ -1,7 +1,7 @@
 {
   "name": "ESPCoreExtension",
   "keywords": "iot, home, automation, wifi, esp8266, esp32",
-  "description": "A simple C++ linrary for the ESP32 and ESP8266 boards in Arduino development environment",
+  "description": "A C++ library for ESP32 and ESP8266 boards in the Arduino development environment to quickly develop sketches",
   "authors":
   {
     "name": "Gérald GUIONY",

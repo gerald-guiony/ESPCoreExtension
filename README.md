@@ -7,7 +7,7 @@
 [![ESP32](https://img.shields.io/badge/ESP-32-000000.svg?longCache=true&style=flat&colorA=CC101F)](https://www.espressif.com/en/products/socs/esp32)
 
 ESPCoreExtension is a C++ library designed for the Arduino Core on ESP8266 and ESP32 boards.
-It provides a collection of classes and functions that extends the libraries of the [Arduino core for the ESP8266](https://github.com/esp8266/Arduino) and [Arduino core for the ESP32](https://github.com/espressif/arduino-esp32) projects
+It provides a collection of classes and functions allow you to quickly develop sketches.
 
 ## Getting started
 
@@ -22,7 +22,7 @@ To use ESPCoreExtension, you will need:
 1. Download the latest master source code [.zip](https://github.com/gerald-guiony/ESPCoreExtension/archive/master.zip)
 2. In the Arduino IDE, import the `.zip` file by navigating to **Sketch → Include Library → Add .ZIP Library**
 
-## Dependencies
+## Prerequisites
 
 To use this library, you should have version 3.1.2 of the [Arduino core for the ESP8266](https://github.com/esp8266/Arduino) or version 3.0.7 of the [ESP32 Arduino core](https://github.com/espressif/arduino-esp32) installed
 
