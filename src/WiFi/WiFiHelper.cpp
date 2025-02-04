@@ -153,12 +153,15 @@ void WiFiHelper :: disconnectAll () {
 
 	WiFi.persistent(false);
 
-	WiFi.softAPdisconnect(true);					// Delete the AP config complete from the espressif config memory
-	WiFi.disconnect(true);							// Disconnects the station from an access point
+	if (isAccessPointMode ())
+		WiFi.softAPdisconnect(true);				// Delete the AP config complete from the espressif config memory
 
-	WiFi.persistent(true);
+	if (isStationModeActive ())
+		WiFi.disconnect(true);						// Disconnects the station from an access point
 
-	delay(1);
+//	WiFi.persistent(true);
+
+	delay(100);
 }
 
 //========================================================================================================================
@@ -172,7 +175,7 @@ void WiFiHelper :: WiFiOn () {
 
 	WiFi.disconnect(false);  						// Reconnect the network
 
-	delay(1);
+	delay(100);
 }
 
 //========================================================================================================================
@@ -181,13 +184,13 @@ void WiFiHelper :: WiFiOn () {
 void WiFiHelper :: WiFiOff () {
 
 	disconnectAll();
-	WiFi.mode(WIFI_OFF);
+	WiFi.mode(WIFI_OFF);							// Eteint la radio WiFi
 
 #ifdef ESP8266
 	WiFi.forceSleepBegin();							// Switch off the radio, disable WiFi for 0xFFFFFFFF=4294967295 (32 bits) us which is about 71 minutes
 #endif
 
-	delay(1); 										// Give OS control to wake up wifi. yield() works also
+	delay(100); 									// Give OS control to wake up wifi. yield() works also
 
 	// WAKE_RF_DISABLED to keep the WiFi radio disabled when we wake up
 //	ESP.deepSleep( SLEEPTIME, WAKE_RF_DISABLED );

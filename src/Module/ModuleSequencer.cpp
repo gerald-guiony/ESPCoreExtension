@@ -8,6 +8,7 @@
 
 #include "EspBoard.h"
 #include "Print/Logger.h"
+#include "ModuleBlinker.h"
 #include "WiFi/WiFiHelper.h"
 
 #include "ModuleSequencer.h"
@@ -24,7 +25,7 @@ SINGLETON_IMPL (ModuleSequencer)
 //========================================================================================================================
 void ModuleSequencer :: requestReboot ()
 {
-	_isTimeToReboot = true;
+	_isRebootRequested = true;
 }
 
 //========================================================================================================================
@@ -32,21 +33,7 @@ void ModuleSequencer :: requestReboot ()
 //========================================================================================================================
 void ModuleSequencer :: requestWakeUp ()
 {
-	_lastWakeUpTimeStamp = millis();
-}
-
-//========================================================================================================================
-//
-//========================================================================================================================
-bool ModuleSequencer :: isWakeUpRequested ()
-{
-	bool isWakeUpTimeOk = (millis() - _lastWakeUpTimeStamp <= _timeBetweenWakeUpMs);
-	if (isWakeUpTimeOk != _isWakeUpTimeOk) {
-		_isWakeUpTimeOk = isWakeUpTimeOk;
-		notifyWakeUpRequested (isWakeUpTimeOk);
-		return true;
-	}
-	return false;
+	_isWakeUpRequested = true;
 }
 
 //========================================================================================================================
@@ -63,7 +50,8 @@ void ModuleSequencer :: enterDeepSleepWhenWifiOff ()
 void ModuleSequencer :: setModules (const std::list <IModule *> & modules)
 {
 	_modules = modules;
-	_itModule = _modules.end();
+	_modules.push_back(&I(ModuleBlinker));
+	_itModule = _modules.begin ();
 }
 
 //========================================================================================================================
@@ -73,7 +61,6 @@ void ModuleSequencer :: setup (const std::list <IModule *> & modules)
 {
 	setModules (modules);
 	requestWakeUp ();
-	_previousModulesExecTimeStamp = millis ();
 }
 
 //========================================================================================================================
@@ -96,26 +83,36 @@ void ModuleSequencer :: loop ()
 		_itModule++;
 
 		if (_itModule == _modules.end ()) {
-			_previousModulesExecTimeStamp = millis ();
+			_lastModulesLoopTimeStampMs = millis ();
 		}
 	}
 	else {
 
-		unsigned long timeBeforeNextExec = _isWakeUpTimeOk ? _shortTimeBetweenExecMs : _longTimeBetweenExecMs;
-
-		if ((millis() - _previousModulesExecTimeStamp > timeBeforeNextExec) || isWakeUpRequested ()) {
-
-			if (_isTimeToEnterDeepSleep ()) {
-				EspBoard::enterDeepSleep(_deepSleepTimeMs);
-			}
-			else {
-				EspBoard::blink();
-				_itModule = _modules.begin ();
-			}
+		if (_isTimeToEnterDeepSleep ()) {
+			EspBoard::enterDeepSleep(_deepSleepTimeMs);
 		}
 		// millis takes 49+_days to rollover
-		else if ((millis() < _previousModulesExecTimeStamp) || _isTimeToReboot) {
+		else if ((millis() < _lastModulesLoopTimeStampMs) || _isRebootRequested) {
 			EspBoard::reboot ();
+		}
+
+		bool isAwake = (millis() - _lastWakeUpTimeStampMs <= MIN_TIME_BETWEEN_WAKEUP_ms);
+
+		if (_isWakeUpRequested) {
+
+			_isWakeUpRequested = false;
+			_lastWakeUpTimeStampMs = millis();
+
+			if (!isAwake) {
+				isAwake = true;
+				notifyWakeUpRequested ();
+			}
+		}
+
+		unsigned long timeBeforeNextModulesLoopMs = isAwake ? SHORT_TIME_BETWEEN_MODULES_LOOP_ms : LONG_TIME_BETWEEN_MODULES_LOOP_ms;
+
+		if (millis() - _lastModulesLoopTimeStampMs > timeBeforeNextModulesLoopMs) {
+			_itModule = _modules.begin ();
 		}
 	}
 }

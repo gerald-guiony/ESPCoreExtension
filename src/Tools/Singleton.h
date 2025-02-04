@@ -63,4 +63,20 @@ private:																						\
 	SINGLETON_INST(className)
 
 
-
+#define SINGLETON_INLINE(className)																\
+public:																							\
+	/*--------------------------------------------------------------------------------------*/	\
+	/* Class used within library, in other library and also in main application 			*/	\
+	/* => move the static Singleton instance into cpp										*/	\
+	static className & getInstance ()															\
+	{																							\
+		static className instance##className; /* instantiated on first use */					\
+		return instance##className;																\
+	}																							\
+	className						(const className&) = delete;								\
+	className& operator=			(const className&) = delete;								\
+																								\
+private:																						\
+	/* private constructor and destructor													*/	\
+	className						() {}														\
+	virtual ~className				() {}
