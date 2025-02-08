@@ -1,5 +1,5 @@
 //************************************************************************************************************************
-// ModuleBlinker.h
+// BlinkerModule.h
 // Version 1.0 Jan, 2025
 // Author Gerald Guiony
 //************************************************************************************************************************
@@ -13,10 +13,10 @@
 namespace corex {
 
 //------------------------------------------------------------------------------
-// WARNING : SINGLETON !!!!
-class ModuleBlinker : public Module <>
+//
+class BlinkerModule : public Module <>
 {
-	SINGLETON_INLINE(ModuleBlinker)
+	SINGLETON_INLINE(BlinkerModule)
 
 public :
 	virtual void setup	() override {}

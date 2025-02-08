@@ -8,12 +8,16 @@
 
 namespace corex {
 
+//------------------------------------------------------------------------------
+//
 class IAsyncModule
 {
 public:
     virtual ~IAsyncModule() = default;
 };
 
+//------------------------------------------------------------------------------
+//
 template <typename ...Args>
 class AsyncModule : public IAsyncModule
 {

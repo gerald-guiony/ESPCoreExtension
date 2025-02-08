@@ -34,7 +34,7 @@
 namespace corex {
 
 //------------------------------------------------------------------------------
-// WARNING : SINGLETON !!!!
+//
 class ModuleSequencer : public Module <const std::list <IModule *> &>
 {
 	SINGLETON_CLASS(ModuleSequencer)

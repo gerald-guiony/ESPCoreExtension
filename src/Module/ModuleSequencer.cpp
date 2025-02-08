@@ -8,7 +8,7 @@
 
 #include "EspBoard.h"
 #include "Print/Logger.h"
-#include "ModuleBlinker.h"
+#include "BlinkerModule.h"
 #include "WiFi/WiFiHelper.h"
 
 #include "ModuleSequencer.h"
@@ -50,7 +50,7 @@ void ModuleSequencer :: enterDeepSleepWhenWifiOff ()
 void ModuleSequencer :: setModules (const std::list <IModule *> & modules)
 {
 	_modules = modules;
-	_modules.push_back(&I(ModuleBlinker));
+	_modules.push_back(&I(BlinkerModule));
 	_itModule = _modules.begin ();
 }
 

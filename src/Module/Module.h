@@ -8,6 +8,8 @@
 
 namespace corex {
 
+//------------------------------------------------------------------------------
+//
 class IModule
 {
 public:
@@ -15,6 +17,8 @@ public:
 	virtual void loop () = 0;
 };
 
+//------------------------------------------------------------------------------
+//
 template <typename ...Args>
 class Module  : public IModule
 {
