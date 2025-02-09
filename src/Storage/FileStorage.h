@@ -33,6 +33,8 @@ public:
 	static void spiffsCheckIfFormatted				();
 	static String spiffsListFiles					();
 	static void spiffsInfos							();
+	static size_t spiffsTotalBytes					();
+	static size_t spiffsRemainingBytes				();
 	static bool spiffsCheckRemainingBytes			();
 	static void spiffsRemoveAllFiles				();
 	static void spiffsRemoveAllTmpFiles				();

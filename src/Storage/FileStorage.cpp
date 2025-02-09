@@ -119,13 +119,31 @@ void FileStorage :: spiffsInfos ()
 		F("Spiffs used bytes : ")		<< used		<< LN <<
 		F("Spiffs remaining bytes : ")	<< (total - used)
 	);
-
 }
 
 //========================================================================================================================
 //
 //========================================================================================================================
-bool FileStorage :: spiffsCheckRemainingBytes ()
+size_t FileStorage :: spiffsTotalBytes ()
+{
+#ifdef ESP8266
+
+	FSInfo fs_info;
+	LittleFS.info(fs_info);
+
+	return fs_info.totalBytes;
+
+#elif defined (ESP32)
+
+	return LittleFS.totalBytes();
+
+#endif
+}
+
+//========================================================================================================================
+//
+//========================================================================================================================
+size_t FileStorage :: spiffsRemainingBytes ()
 {
 	size_t result = 0;
 
@@ -142,7 +160,15 @@ bool FileStorage :: spiffsCheckRemainingBytes ()
 
 #endif
 
-	if (result < MIN_REMAINING_BYTES) {
+	return result;
+}
+
+//========================================================================================================================
+//
+//========================================================================================================================
+bool FileStorage :: spiffsCheckRemainingBytes ()
+{
+	if (spiffsRemainingBytes() < MIN_REMAINING_BYTES) {
 		Logln(F("*** WARNING : available spiffs space is too low !"));
 		return false;
 	}
