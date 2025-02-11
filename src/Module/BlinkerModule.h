@@ -21,7 +21,7 @@ class BlinkerModule : public Module <>
 public :
 	virtual void setup	() override {}
 	virtual void loop	() override {
-		EspBoard::blink();
+		EspBoard::blinks (2);
 	};
 };
 
