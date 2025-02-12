@@ -289,7 +289,7 @@ void EspBoard :: blinkOff () {
 //========================================================================================================================
 void EspBoard :: blink () {
 	blinkOn();
-	asyncDelayMillis (5);
+	asyncDelayMillis (10);
 	blinkOff();
 }
 

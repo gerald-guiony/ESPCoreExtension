@@ -47,19 +47,21 @@ void ModuleSequencer :: enterDeepSleepWhenWifiOff ()
 //========================================================================================================================
 //
 //========================================================================================================================
-void ModuleSequencer :: setModules (const std::list <IModule *> & modules)
+void ModuleSequencer :: setModules (const std::list <IModule *> & modules, bool addBlinkerModule)
 {
 	_modules = modules;
-	_modules.push_back(&I(BlinkerModule));
+	if (addBlinkerModule) {
+		_modules.push_back(&I(BlinkerModule));
+	}
 	_itModule = _modules.begin ();
 }
 
 //========================================================================================================================
 //
 //========================================================================================================================
-void ModuleSequencer :: setup (const std::list <IModule *> & modules)
+void ModuleSequencer :: setup (const std::list <IModule *> & modules, bool addBlinkerModule)
 {
-	setModules (modules);
+	setModules (modules, addBlinkerModule);
 	requestWakeUp ();
 }
 
@@ -96,17 +98,18 @@ void ModuleSequencer :: loop ()
 			EspBoard::reboot ();
 		}
 
+		static bool previousIsAwake = false;
 		bool isAwake = (millis() - _lastWakeUpTimeStampMs <= MIN_TIME_BETWEEN_WAKEUP_ms);
 
 		if (_isWakeUpRequested) {
-
 			_isWakeUpRequested = false;
 			_lastWakeUpTimeStampMs = millis();
+			isAwake = true;
+		}
 
-			if (!isAwake) {
-				isAwake = true;
-				notifyWakeUpRequested ();
-			}
+		if (previousIsAwake != isAwake) {
+			notifyAwake (isAwake);
+			previousIsAwake = isAwake;
 		}
 
 		unsigned long timeBeforeNextModulesLoopMs = isAwake ? SHORT_TIME_BETWEEN_MODULES_LOOP_ms : LONG_TIME_BETWEEN_MODULES_LOOP_ms;

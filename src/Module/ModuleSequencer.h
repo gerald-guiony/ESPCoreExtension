@@ -35,7 +35,7 @@ namespace corex {
 
 //------------------------------------------------------------------------------
 //
-class ModuleSequencer : public Module <const std::list <IModule *> &>
+class ModuleSequencer : public Module <const std::list <IModule *> &, bool>
 {
 	SINGLETON_CLASS(ModuleSequencer)
 
@@ -58,11 +58,11 @@ private:
 
 private:
 
-	void setModules 							(const std::list <IModule *> & modules);
+	void setModules 							(const std::list <IModule *> & modules, bool addBlinkerModule);
 
 public:
 
-	Signal <> notifyWakeUpRequested;
+	Signal <bool> notifyAwake;
 
 public:
 
@@ -73,7 +73,7 @@ public:
 	void setConditionToEnterDeepSleep			(fn_b isTimeToEnterDeepSleep)				{ _isTimeToEnterDeepSleep	= isTimeToEnterDeepSleep;	}
 	void enterDeepSleepWhenWifiOff				();
 
-	void setup									(const std::list <IModule *> & modules) override;
+	void setup									(const std::list <IModule *> & modules, bool addBlinkerModule = true) override;
 	void loop									() override;
 };
 

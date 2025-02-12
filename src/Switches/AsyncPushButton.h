@@ -27,6 +27,7 @@ public:
 	{
 
 #ifdef ARDUINO_ESP8266_NODEMCU_ESP12E
+		// Pas de PWM ..
 		if (pin == D0 /* 16*/) return;
 #endif
 
